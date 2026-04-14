@@ -1,12 +1,41 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres';
 import type { Manoeuvre } from '../rules/types';
 
 type SortBy = 'section' | 'coeff' | 'name';
+type SortDir = 'asc' | 'desc';
 
 export default function TricksDocs() {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('section');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTrickId = searchParams.get('trick');
+
+  useEffect(() => {
+    if (!activeTrickId) return;
+    const el = document.getElementById(`trick-${activeTrickId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeTrickId]);
+
+  const goToTrick = (id: string) => {
+    setSearchParams({ trick: id }, { replace: false });
+    document
+      .getElementById(`trick-${id}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
+
+  const copyTrickLink = async (id: string) => {
+    goToTrick(id);
+    const url = `${window.location.origin}${window.location.pathname}#/docs/tricks?trick=${encodeURIComponent(id)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // clipboard may be unavailable on insecure contexts
+    }
+  };
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -18,42 +47,83 @@ export default function TricksDocs() {
             m.description.some((d) => d.toLowerCase().includes(q)),
         )
       : [...MANOEUVRES];
-    return filtered.sort((a, b) => {
-      if (sortBy === 'coeff') return b.coefficient - a.coefficient;
+    const sorted = filtered.sort((a, b) => {
+      if (sortBy === 'coeff') return a.coefficient - b.coefficient;
       if (sortBy === 'name') return a.name.localeCompare(b.name);
       return compareSections(a.sectionNumber, b.sectionNumber);
     });
-  }, [query, sortBy]);
+    if (sortDir === 'desc') sorted.reverse();
+    return sorted;
+  }, [query, sortBy, sortDir]);
 
   return (
-    <div className="h-full flex flex-col">
-      <div className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-3 bg-white dark:bg-slate-900">
-        <h1 className="text-lg font-semibold">Tricks reference</h1>
-        <div className="text-xs text-slate-500">{list.length} / {MANOEUVRES.length}</div>
-        <input
-          type="text"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="search name, section, description..."
-          className="ml-auto w-72 px-2 py-1 text-sm rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none"
-        />
-        <label className="text-xs text-slate-500 flex items-center gap-1">
-          sort:
-          <select
-            value={sortBy}
-            onChange={(e) => setSortBy(e.target.value as SortBy)}
-            className="text-sm px-1 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700"
-          >
-            <option value="section">Section</option>
-            <option value="coeff">Coefficient</option>
-            <option value="name">Name</option>
-          </select>
-        </label>
-      </div>
-      <div className="flex-1 overflow-auto p-4">
-        <div className="max-w-4xl mx-auto space-y-3">
+    <div className="h-full flex min-h-0">
+      <aside className="w-72 shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex flex-col">
+        <div className="p-3 border-b border-slate-200 dark:border-slate-700 space-y-2">
+          <div className="flex items-center justify-between">
+            <div className="text-xs uppercase text-slate-500">Tricks</div>
+            <div className="text-xs text-slate-500">
+              {list.length} / {MANOEUVRES.length}
+            </div>
+          </div>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="filter tricks..."
+            className="w-full px-2 py-1 text-sm rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 focus:border-sky-500 outline-none"
+          />
+          <div className="flex items-center gap-1 text-xs text-slate-500">
+            <span>sort:</span>
+            <select
+              value={sortBy}
+              onChange={(e) => setSortBy(e.target.value as SortBy)}
+              className="flex-1 text-sm px-1 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700"
+            >
+              <option value="section">Section</option>
+              <option value="coeff">Coefficient</option>
+              <option value="name">Name</option>
+            </select>
+            <button
+              type="button"
+              onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+              title={sortDir === 'asc' ? 'ascending' : 'descending'}
+              className="px-2 py-0.5 rounded bg-white dark:bg-slate-800 border border-slate-300 dark:border-slate-700 hover:border-sky-500"
+            >
+              {sortDir === 'asc' ? '↑' : '↓'}
+            </button>
+          </div>
+        </div>
+        <nav className="flex-1 overflow-y-auto p-2 text-sm">
           {list.map((m) => (
-            <TrickEntry key={m.id} manoeuvre={m} />
+            <button
+              key={m.id}
+              type="button"
+              onClick={() => goToTrick(m.id)}
+              className={`block w-full text-left py-0.5 px-2 rounded hover:bg-white dark:hover:bg-slate-800 ${
+                activeTrickId === m.id
+                  ? 'text-sky-600 dark:text-sky-400 bg-white dark:bg-slate-800'
+                  : 'text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400'
+              }`}
+            >
+              <span className="font-mono text-xs text-slate-500 mr-2">{m.sectionNumber}</span>
+              {m.name}
+            </button>
+          ))}
+          {list.length === 0 && (
+            <div className="px-2 py-4 text-xs text-slate-500">No tricks match.</div>
+          )}
+        </nav>
+      </aside>
+      <div className="flex-1 overflow-auto">
+        <div className="max-w-4xl mx-auto px-4 py-4 space-y-3">
+          {list.map((m) => (
+            <TrickEntry
+              key={m.id}
+              manoeuvre={m}
+              onNavigate={goToTrick}
+              onCopyLink={copyTrickLink}
+            />
           ))}
           {list.length === 0 && (
             <div className="text-center text-slate-500 py-10">Nothing matches.</div>
@@ -64,7 +134,16 @@ export default function TricksDocs() {
   );
 }
 
-function TrickEntry({ manoeuvre: m }: { manoeuvre: Manoeuvre }) {
+function TrickEntry({
+  manoeuvre: m,
+  onNavigate,
+  onCopyLink,
+}: {
+  manoeuvre: Manoeuvre;
+  onNavigate: (id: string) => void;
+  onCopyLink: (id: string) => void;
+}) {
+  const [copied, setCopied] = useState(false);
   const flags: string[] = [];
   if (m.mustBeFirst) flags.push('must be first');
   if (m.cannotBeLastTwo) flags.push('cannot be in last two');
@@ -77,12 +156,26 @@ function TrickEntry({ manoeuvre: m }: { manoeuvre: Manoeuvre }) {
   return (
     <section
       id={`trick-${m.id}`}
-      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4"
+      className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 scroll-mt-4"
     >
       <header className="flex items-baseline gap-3 mb-2">
         <span className="text-xs font-mono text-slate-500">{m.sectionNumber}</span>
         <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{m.name}</h2>
-        <span className="text-xs text-slate-500 dark:text-slate-400">coeff {m.coefficient.toFixed(2)}</span>
+        <span className="text-xs text-slate-500 dark:text-slate-400">
+          coeff {m.coefficient.toFixed(2)}
+        </span>
+        <button
+          type="button"
+          onClick={() => {
+            onCopyLink(m.id);
+            setCopied(true);
+            window.setTimeout(() => setCopied(false), 1500);
+          }}
+          title="Copy link to this trick"
+          className="ml-auto text-xs text-slate-400 hover:text-sky-600 dark:hover:text-sky-400"
+        >
+          {copied ? 'copied' : '#'}
+        </button>
       </header>
 
       <ul className="list-disc pl-5 space-y-0.5 text-sm text-slate-700 dark:text-slate-300">
@@ -143,11 +236,7 @@ function TrickEntry({ manoeuvre: m }: { manoeuvre: Manoeuvre }) {
                 <button
                   key={id}
                   type="button"
-                  onClick={() =>
-                    document
-                      .getElementById(`trick-${id}`)
-                      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }
+                  onClick={() => onNavigate(id)}
                   className="px-2 py-0.5 rounded bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:underline"
                 >
                   {target?.name ?? id}

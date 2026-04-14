@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rulesSource from '../../docs/sporting_code_aerobatics_2025.md?raw';
@@ -38,12 +39,26 @@ function extractToc(md: string): TocEntry[] {
 
 export default function RulesDocs() {
   const [query, setQuery] = useState('');
+  const [searchParams, setSearchParams] = useSearchParams();
   const toc = useMemo(() => extractToc(rulesSource), []);
   const filteredToc = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return toc;
     return toc.filter((t) => t.text.toLowerCase().includes(q));
   }, [toc, query]);
+
+  const activeSlug = searchParams.get('s');
+
+  useEffect(() => {
+    if (!activeSlug) return;
+    const el = document.getElementById(activeSlug);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeSlug]);
+
+  const goToSection = (slug: string) => {
+    setSearchParams({ s: slug }, { replace: false });
+    document.getElementById(slug)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className="h-full flex min-h-0">
@@ -63,9 +78,7 @@ export default function RulesDocs() {
             <button
               key={t.slug}
               type="button"
-              onClick={() =>
-                document.getElementById(t.slug)?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-              }
+              onClick={() => goToSection(t.slug)}
               className={`block w-full text-left py-0.5 px-2 rounded text-slate-600 dark:text-slate-400 hover:text-sky-600 dark:hover:text-sky-400 hover:bg-white dark:hover:bg-slate-800 ${
                 t.level === 3 ? 'pl-6 text-xs' : 'font-medium'
               }`}
