@@ -93,7 +93,7 @@ export default function MobileMenu({ open, onClose }: Props) {
               <NumberStepper
                 value={program.repeatAfterRuns}
                 min={0}
-                max={99}
+                max={MAX_RUNS}
                 onChange={setRepeatAfterRuns}
                 ariaLabel="Reset gap"
               />
