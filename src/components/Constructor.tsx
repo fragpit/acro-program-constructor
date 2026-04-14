@@ -206,12 +206,12 @@ function ConstructorDesktop() {
             </label>
             <label
               className="flex items-center gap-2 text-slate-700 dark:text-slate-300"
-              title="Repetition tracker resets every N runs. 0 = never resets. 2 = blocks [1,2], [3,4], [5]..."
+              title="Repetition tracker resets every N runs. MAX = no repeats across the whole program. 2 = blocks [1,2], [3,4], [5]..."
             >
               Reset gap:
               <NumberStepper
                 value={program.repeatAfterRuns}
-                min={0}
+                min={1}
                 max={MAX_RUNS}
                 onChange={setRepeatAfterRuns}
                 ariaLabel="Reset gap"

@@ -16,11 +16,11 @@ function identityKey(t: PlacedTrick, m: Manoeuvre): string {
  * considered a repetition. Twisted/flipped doesn't change identity; reverse
  * does. Section 4.3 exceptions (repetitionAllowed) skip the check.
  *
- * `repeatAfterRuns` defines how often the repetition tracker resets:
- *  - 0: tracker never resets; any repetition anywhere in the program is flagged.
- *  - N > 0: runs are partitioned into fixed blocks of N consecutive runs
- *    ([0..N-1], [N..2N-1], ...). A repetition counts only if both occurrences
- *    fall within the same block - crossing a block boundary resets history.
+ * `repeatAfterRuns` defines how often the repetition tracker resets. Runs
+ * are partitioned into fixed blocks of N consecutive runs ([0..N-1],
+ * [N..2N-1], ...); a repetition counts only if both occurrences fall within
+ * the same block. N must be >= 1; N >= MAX_RUNS means no repeats anywhere
+ * in the program.
  */
 export function validateRepetition(
   program: Program,
@@ -44,7 +44,7 @@ export function validateRepetition(
     if (list.length < 2) continue;
     const byBlock = new Map<number, number[]>();
     list.forEach((item, i) => {
-      const block = gap === 0 ? 0 : Math.floor(item.runIndex / gap);
+      const block = Math.floor(item.runIndex / gap);
       const arr = byBlock.get(block) ?? [];
       arr.push(i);
       byBlock.set(block, arr);

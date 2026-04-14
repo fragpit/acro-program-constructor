@@ -1,4 +1,5 @@
 import type { PlacedTrick, Program, Run } from '../../types';
+import { MAX_RUNS } from '../../../data/competition-types';
 
 let idCounter = 0;
 export function resetIds() {
@@ -13,5 +14,5 @@ export function run(...tricks: PlacedTrick[]): Run {
 }
 
 export function program(runs: Run[], awtMode = false): Program {
-  return { awtMode, runs, repeatAfterRuns: 0, defaultBonuses: [] };
+  return { awtMode, runs, repeatAfterRuns: MAX_RUNS, defaultBonuses: [] };
 }

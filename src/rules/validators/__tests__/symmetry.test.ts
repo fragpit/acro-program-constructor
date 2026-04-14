@@ -5,7 +5,7 @@ import { placedTrick, run } from './helpers';
 import type { Program } from '../../types';
 
 function prog(runs: ReturnType<typeof run>[]): Program {
-  return { awtMode: false, runs, repeatAfterRuns: 0, defaultBonuses: [] };
+  return { awtMode: false, runs, repeatAfterRuns: runs.length, defaultBonuses: [] };
 }
 
 describe('runSymmetry', () => {

@@ -88,11 +88,11 @@ export default function MobileMenu({ open, onClose }: Props) {
                 ariaLabel="Runs"
               />
             </label>
-            <label className="flex items-center justify-between gap-3" title="Repetition tracker resets every N runs. 0 = never.">
+            <label className="flex items-center justify-between gap-3" title="Repetition tracker resets every N runs. MAX = no repeats across the whole program.">
               <span className="text-slate-700 dark:text-slate-200">Reset gap</span>
               <NumberStepper
                 value={program.repeatAfterRuns}
-                min={0}
+                min={1}
                 max={MAX_RUNS}
                 onChange={setRepeatAfterRuns}
                 ariaLabel="Reset gap"

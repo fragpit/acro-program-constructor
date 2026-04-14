@@ -39,7 +39,7 @@ describe('technicity', () => {
     const t = programTechnicity(
       {
         awtMode: false,
-        repeatAfterRuns: 0,
+        repeatAfterRuns: 2,
         defaultBonuses: [],
         runs: [run(placedTrick('sat')), run(placedTrick('stall'))],
       },
