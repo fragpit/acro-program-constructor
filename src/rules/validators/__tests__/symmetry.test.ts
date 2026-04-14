@@ -30,9 +30,9 @@ describe('runSymmetry', () => {
     expect(runSymmetry(r.tricks, MANOEUVRES_BY_ID).balanced).toBe(true);
   });
 
-  it('flags a single sided trick as unbalanced', () => {
+  it('treats a single sided trick as balanced', () => {
     const r = run(placedTrick('sat', { side: 'L' }));
-    expect(runSymmetry(r.tricks, MANOEUVRES_BY_ID).balanced).toBe(false);
+    expect(runSymmetry(r.tricks, MANOEUVRES_BY_ID).balanced).toBe(true);
   });
 
   it('flags difference of 2 as unbalanced', () => {
@@ -79,10 +79,8 @@ describe('validateSymmetry', () => {
     expect(v[0].severity).toBe('warning');
   });
 
-  it('warns when a single sided trick cannot be balanced', () => {
+  it('does not warn for a single sided trick', () => {
     const p = prog([run(placedTrick('sat', { side: 'L' }))]);
-    const v = validateSymmetry(p, MANOEUVRES_BY_ID);
-    expect(v).toHaveLength(1);
-    expect(v[0].severity).toBe('warning');
+    expect(validateSymmetry(p, MANOEUVRES_BY_ID)).toEqual([]);
   });
 });
