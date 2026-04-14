@@ -7,8 +7,10 @@ import RulesDocs from './RulesDocs';
 
 export default function App() {
   return (
-    <div className="h-full flex flex-col bg-white text-slate-900 dark:bg-slate-950 dark:text-slate-100">
-      <header className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-4 bg-white dark:bg-slate-900">
+    <div className="h-full flex flex-col text-slate-900 dark:text-slate-100 relative z-10">
+      <div aria-hidden className="paraglider-bg" />
+      <div aria-hidden className="mountain-bg" />
+      <header className="px-4 py-3 border-b border-slate-200 dark:border-slate-700 flex items-center gap-4 bg-white/85 dark:bg-slate-900/85 backdrop-blur-sm relative z-10">
         <Link to="/" className="font-semibold hover:text-sky-600 dark:hover:text-sky-400">
           Acro Program Constructor
         </Link>
