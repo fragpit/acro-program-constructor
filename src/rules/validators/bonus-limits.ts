@@ -8,7 +8,7 @@ const LIMITS: Record<BonusCategory, number> = {
 
 /**
  * 3.5: Per-run bonus category limits. Max 5 twisted / 3 reversed / 2 flipped
- * manoeuvres per run. Extras are unscored.
+ * manoeuvres per run. Extras are unscored (warning, not error).
  */
 export function validateBonusLimits(
   program: Program,
@@ -36,7 +36,7 @@ export function validateBonusLimits(
       if (cells.length > LIMITS[cat]) {
         violations.push({
           ruleId: `bonus-limits-${cat}`,
-          severity: 'error',
+          severity: 'warning',
           description: `Run ${runIndex + 1}: more than ${LIMITS[cat]} ${cat} manoeuvres (${cells.length})`,
           affectedCells: cells.map((c) => ({ runIndex, trickIndex: c.trickIndex })),
         });
