@@ -6,13 +6,11 @@ import { exclusionsByTrick } from '../../scoring/eligibility';
 import { unrewardedBonusesByTrick } from '../../rules/repeated-bonus';
 import { runSymmetry } from '../../rules/validators/symmetry';
 import type { Run } from '../../rules/types';
-import { useProgramStore } from '../../store/program-store';
 import TrickCellMobile from './TrickCellMobile';
 
 interface Props {
   run: Run;
   runIndex: number;
-  totalRuns: number;
   awtMode: boolean;
   isArmed: boolean;
   movingTrickId: string | null;
@@ -25,7 +23,6 @@ interface Props {
 export default function RunMobile({
   run,
   runIndex,
-  totalRuns,
   awtMode,
   isArmed,
   movingTrickId,
@@ -34,8 +31,6 @@ export default function RunMobile({
   highlights,
   choreoPenalty,
 }: Props) {
-  const resetRun = useProgramStore((s) => s.resetRun);
-
   const technicity = runTechnicity(run, MANOEUVRES_BY_ID);
   const bonus = runBonus(run, MANOEUVRES_BY_ID);
   const bonusUsage = runBonusUsage(run, MANOEUVRES_BY_ID);
@@ -50,23 +45,6 @@ export default function RunMobile({
 
   return (
     <div className="flex flex-col h-full min-h-0">
-      <div className="px-3 py-2 flex items-center justify-between text-sm border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900">
-        <div className="font-semibold text-slate-800 dark:text-slate-200">
-          Run {runIndex + 1} <span className="text-slate-400 text-xs font-normal">of {totalRuns}</span>
-        </div>
-        {run.tricks.length > 0 && (
-          <button
-            type="button"
-            onClick={() => {
-              if (confirm(`Clear run ${runIndex + 1}?`)) resetRun(runIndex);
-            }}
-            className="text-xs text-slate-500 hover:text-red-500"
-          >
-            reset
-          </button>
-        )}
-      </div>
-
       <div className="flex-1 overflow-y-auto p-3 space-y-2">
         {run.tricks.length === 0 ? (
           <button
