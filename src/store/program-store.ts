@@ -21,6 +21,7 @@ interface ProgramState {
   setAwtMode: (on: boolean) => void;
   setRunCount: (n: number) => void;
   setRepeatAfterRuns: (n: number) => void;
+  setDefaultBonuses: (bonuses: string[]) => void;
   addTrick: (runIndex: number, manoeuvreId: string, atIndex?: number) => void;
   removeTrick: (trickId: string) => void;
   moveTrick: (trickId: string, toRunIndex: number, toIndex: number) => void;
@@ -33,6 +34,7 @@ interface ProgramState {
   loadSavedProgram: (name: string) => void;
   deleteSavedProgram: (name: string) => void;
   newProgram: () => void;
+  importProgram: (program: Program, name: string | null) => void;
 }
 
 function recompute(program: Program): Violation[] {
@@ -54,6 +56,7 @@ export const useProgramStore = create<ProgramState>()(
     awtMode: false,
     runs: Array.from({ length: DEFAULT_RUNS }, () => emptyRun()),
     repeatAfterRuns: 0,
+    defaultBonuses: [],
   },
   violations: [],
   selectedTrickId: null,
@@ -76,6 +79,7 @@ export const useProgramStore = create<ProgramState>()(
       const saved = state.savedPrograms[name];
       if (!saved) return state;
       const program: Program = JSON.parse(JSON.stringify(saved));
+      if (!Array.isArray(program.defaultBonuses)) program.defaultBonuses = [];
       return {
         program,
         violations: recompute(program),
@@ -101,11 +105,24 @@ export const useProgramStore = create<ProgramState>()(
         awtMode: false,
         runs: Array.from({ length: DEFAULT_RUNS }, () => emptyRun()),
         repeatAfterRuns: 0,
+        defaultBonuses: [],
       };
       return {
         program,
         violations: recompute(program),
         currentName: null,
+        selectedTrickId: null,
+      };
+    }),
+
+  importProgram: (program, name) =>
+    set(() => {
+      const cloned: Program = JSON.parse(JSON.stringify(program));
+      if (!Array.isArray(cloned.defaultBonuses)) cloned.defaultBonuses = [];
+      return {
+        program: cloned,
+        violations: recompute(cloned),
+        currentName: name,
         selectedTrickId: null,
       };
     }),
@@ -135,16 +152,30 @@ export const useProgramStore = create<ProgramState>()(
       return { program, violations: recompute(program) };
     }),
 
+  setDefaultBonuses: (bonuses) =>
+    set((state) => ({ program: { ...state.program, defaultBonuses: bonuses } })),
+
   addTrick: (runIndex, manoeuvreId, atIndex) =>
     set((state) => {
+      const manoeuvre = MANOEUVRES_BY_ID[manoeuvreId];
+      const defaults = state.program.defaultBonuses ?? [];
+      const available = new Set(manoeuvre?.availableBonuses.map((b) => b.id) ?? []);
+      const applied: string[] = [];
+      for (const id of defaults) {
+        if (!available.has(id)) continue;
+        const conflicts = (manoeuvre?.mutualExclusions ?? []).some(
+          (group) => group.includes(id) && group.some((g) => applied.includes(g)),
+        );
+        if (!conflicts) applied.push(id);
+      }
       const runs = state.program.runs.map((r, i) => {
         if (i !== runIndex) return r;
         const tricks = [...r.tricks];
         const newTrick: PlacedTrick = {
           id: nextId(),
           manoeuvreId,
-          side: MANOEUVRES_BY_ID[manoeuvreId]?.noSide ? null : 'L',
-          selectedBonuses: [],
+          side: manoeuvre?.noSide ? null : 'L',
+          selectedBonuses: applied,
         };
         tricks.splice(atIndex ?? tricks.length, 0, newTrick);
         return { ...r, tricks };
@@ -238,6 +269,12 @@ export const useProgramStore = create<ProgramState>()(
       }),
       onRehydrateStorage: () => (state) => {
         if (!state) return;
+        if (!Array.isArray(state.program.defaultBonuses)) {
+          state.program.defaultBonuses = [];
+        }
+        for (const saved of Object.values(state.savedPrograms)) {
+          if (!Array.isArray(saved.defaultBonuses)) saved.defaultBonuses = [];
+        }
         for (const run of state.program.runs) {
           for (const t of run.tricks) {
             const m = MANOEUVRES_BY_ID[t.manoeuvreId];

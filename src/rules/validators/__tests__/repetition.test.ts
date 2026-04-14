@@ -5,7 +5,7 @@ import { placedTrick, run } from './helpers';
 import type { Program } from '../../types';
 
 function prog(runs: ReturnType<typeof run>[], repeatAfterRuns = 0): Program {
-  return { awtMode: false, runs, repeatAfterRuns };
+  return { awtMode: false, runs, repeatAfterRuns, defaultBonuses: [] };
 }
 
 describe('validateRepetition', () => {

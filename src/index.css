@@ -10,6 +10,41 @@ html, body, #root {
 
 body {
   font-family: ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  background-color: #ffffff;
+}
+.dark body {
+  background-color: rgb(2 6 23);
+}
+
+.paraglider-bg {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: -1;
+  opacity: 0.18;
+  background-repeat: repeat;
+  background-size: 110px 90px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='110' height='90' viewBox='0 0 110 90'><g stroke='%2394a3b8' fill='none' stroke-width='1' stroke-linecap='round'><path d='M8 20 Q28 8 48 20'/><line x1='12' y1='21' x2='28' y2='36'/><line x1='28' y1='19' x2='28' y2='36'/><line x1='44' y1='21' x2='28' y2='36'/></g><circle cx='28' cy='38' r='1.6' fill='%2394a3b8'/><g stroke='%2394a3b8' fill='none' stroke-width='1' stroke-linecap='round'><path d='M62 58 Q80 48 98 58'/><line x1='66' y1='59' x2='80' y2='72'/><line x1='80' y1='57' x2='80' y2='72'/><line x1='94' y1='59' x2='80' y2='72'/></g><circle cx='80' cy='74' r='1.5' fill='%2394a3b8'/></svg>");
+}
+.dark .paraglider-bg {
+  opacity: 0.12;
+}
+
+.mountain-bg {
+  position: fixed;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 320px;
+  pointer-events: none;
+  z-index: -1;
+  background-repeat: repeat-x;
+  background-position: bottom center;
+  background-size: 1200px 320px;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='1200' height='320' viewBox='0 0 1200 320' preserveAspectRatio='none'><defs><linearGradient id='m' x1='0' y1='0' x2='0' y2='1'><stop offset='0' stop-color='%23f1f5f9'/><stop offset='0.5' stop-color='%23cbd5e1'/><stop offset='1' stop-color='%2394a3b8'/></linearGradient></defs><path d='M0 320 L0 180 L28 165 L52 152 L78 160 L108 125 L135 108 L165 130 L190 118 L218 90 L245 68 L270 92 L298 78 L325 110 L355 135 L385 152 L415 138 L445 115 L475 98 L505 120 L535 140 L568 160 L602 172 L638 155 L670 125 L700 92 L730 112 L758 102 L788 130 L818 152 L850 170 L882 150 L915 128 L948 145 L978 122 L1010 140 L1042 160 L1075 172 L1108 155 L1142 132 L1175 158 L1200 175 L1200 320 Z' fill='url(%23m)' opacity='0.5'/><path d='M0 320 L0 248 L30 235 L60 220 L95 230 L130 210 L165 228 L200 200 L235 215 L270 195 L305 222 L340 240 L375 225 L410 245 L448 230 L482 250 L518 220 L555 235 L592 208 L630 225 L670 240 L708 215 L745 232 L780 210 L815 228 L852 246 L890 235 L928 218 L965 240 L1000 225 L1038 205 L1075 222 L1112 218 L1150 242 L1185 230 L1200 238 L1200 320 Z' fill='%2394a3b8' opacity='0.42'/><path d='M0 320 L0 285 L40 275 L85 282 L130 262 L180 278 L230 268 L285 282 L340 258 L395 276 L450 270 L510 282 L570 262 L632 275 L695 268 L755 278 L815 260 L875 274 L935 268 L995 280 L1060 262 L1125 278 L1170 270 L1200 278 L1200 320 Z' fill='%2364748b' opacity='0.4'/></svg>");
+}
+.dark .mountain-bg {
+  opacity: 0.35;
 }
 
 input[type="number"] {

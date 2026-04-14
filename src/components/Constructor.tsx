@@ -11,10 +11,11 @@ import {
   DragOverlay,
   type DragStartEvent,
 } from '@dnd-kit/core';
-import { MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres';
+import { BONUS_CATALOG, MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres';
 import { MAX_RUNS } from '../data/competition-types';
 import { runTechnicity } from '../scoring/technicity';
 import { runBonus } from '../scoring/bonus';
+import { exclusionsByTrick } from '../scoring/eligibility';
 import { useProgramStore } from '../store/program-store';
 import type { Manoeuvre, PlacedTrick } from '../rules/types';
 import TrickInfoCard from './TrickInfoCard';
@@ -22,7 +23,7 @@ import ViolationsPanel from './ViolationsPanel';
 import TrickCell from './TrickCell';
 import ProgramControls from './ProgramControls';
 
-export default function Builder() {
+export default function Constructor() {
   const program = useProgramStore((s) => s.program);
   const violations = useProgramStore((s) => s.violations);
   const addTrick = useProgramStore((s) => s.addTrick);
@@ -30,6 +31,7 @@ export default function Builder() {
   const setRunCount = useProgramStore((s) => s.setRunCount);
   const setAwtMode = useProgramStore((s) => s.setAwtMode);
   const setRepeatAfterRuns = useProgramStore((s) => s.setRepeatAfterRuns);
+  const setDefaultBonuses = useProgramStore((s) => s.setDefaultBonuses);
   const resetRun = useProgramStore((s) => s.resetRun);
   const resetProgram = useProgramStore((s) => s.resetProgram);
   const selectedTrickId = useProgramStore((s) => s.selectedTrickId);
@@ -42,6 +44,7 @@ export default function Builder() {
     useSensor(TouchSensor, { activationConstraint: { delay: 150, tolerance: 5 } }),
   );
 
+  const [defaultBonusesOpen, setDefaultBonusesOpen] = useState(false);
   const [paletteFilter, setPaletteFilter] = useState('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const sortedAvailable = useMemo(
@@ -172,6 +175,58 @@ export default function Builder() {
               />
               AWT mode
             </label>
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setDefaultBonusesOpen((v) => !v)}
+                className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-slate-400"
+                title="Bonuses auto-applied to every newly added trick (when compatible)"
+              >
+                Default bonuses
+                {program.defaultBonuses.length > 0 && (
+                  <span className="ml-1 text-xs text-sky-600 dark:text-sky-400">
+                    ({program.defaultBonuses.length})
+                  </span>
+                )}
+              </button>
+              {defaultBonusesOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setDefaultBonusesOpen(false)}
+                  />
+                  <div className="absolute left-0 top-full mt-1 z-20 w-56 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-2 space-y-1 max-h-72 overflow-y-auto">
+                    {BONUS_CATALOG.map((b) => {
+                      const checked = program.defaultBonuses.includes(b.id);
+                      return (
+                        <label key={b.id} className="flex items-center gap-2 text-sm cursor-pointer">
+                          <input
+                            type="checkbox"
+                            checked={checked}
+                            onChange={() => {
+                              const next = checked
+                                ? program.defaultBonuses.filter((x) => x !== b.id)
+                                : [...program.defaultBonuses, b.id];
+                              setDefaultBonuses(next);
+                            }}
+                          />
+                          {b.label}
+                        </label>
+                      );
+                    })}
+                    {program.defaultBonuses.length > 0 && (
+                      <button
+                        type="button"
+                        onClick={() => setDefaultBonuses([])}
+                        className="w-full mt-1 px-2 py-0.5 text-xs rounded border border-slate-300 dark:border-slate-600 text-slate-600 dark:text-slate-300 hover:border-red-500 hover:text-red-600"
+                      >
+                        Clear
+                      </button>
+                    )}
+                  </div>
+                </>
+              )}
+            </div>
             <button
               type="button"
               onClick={() => {
@@ -197,6 +252,7 @@ export default function Builder() {
                   awtMode={program.awtMode}
                   choreoPenalty={choreoPenaltyPerRun[runIndex] ?? 0}
                   highlights={highlights}
+                  ignored={exclusionsByTrick(run, MANOEUVRES_BY_ID)}
                   onSelectTrick={selectTrick}
                   selectedTrickId={selectedTrickId}
                   onReset={() => resetRun(runIndex)}
@@ -263,6 +319,7 @@ function RunColumn({
   awtMode,
   choreoPenalty,
   highlights,
+  ignored,
   onSelectTrick,
   selectedTrickId,
   onReset,
@@ -274,6 +331,7 @@ function RunColumn({
   awtMode: boolean;
   choreoPenalty: number;
   highlights: Map<string, 'error' | 'warning'>;
+  ignored: Map<string, string[]>;
   onSelectTrick: (id: string | null) => void;
   selectedTrickId: string | null;
   onReset: () => void;
@@ -307,6 +365,7 @@ function RunColumn({
                   trickIndex={i}
                   highlight={highlights.get(`${runIndex}:${i}`) ?? 'none'}
                   selected={selectedTrickId === t.id}
+                  ignoredReasons={ignored.get(t.id)}
                   onSelect={() => onSelectTrick(t.id)}
                 />
                 <DropZone runIndex={runIndex} insertIndex={i + 1} />

@@ -1,4 +1,4 @@
-import type { Manoeuvre } from '../rules/types';
+import type { BonusDefinition, Manoeuvre } from '../rules/types';
 
 const twisted = (p: number) => ({ id: 'twisted', label: 'Twisted', percent: p, countsAs: 'twisted' as const });
 const twistedExit = (p: number) => ({ id: 'twisted_exit', label: 'Twisted Exit', percent: p, countsAs: 'twisted' as const });
@@ -793,4 +793,18 @@ export const MANOEUVRES: Manoeuvre[] = [
 export const MANOEUVRES_BY_ID: Record<string, Manoeuvre> = Object.fromEntries(
   MANOEUVRES.map((m) => [m.id, m]),
 );
+
+/**
+ * Distinct bonuses across all manoeuvres, keyed by id. Used by the constructor
+ * UI to populate the default-bonus selector.
+ */
+export const BONUS_CATALOG: BonusDefinition[] = (() => {
+  const seen = new Map<string, BonusDefinition>();
+  for (const m of MANOEUVRES) {
+    for (const b of m.availableBonuses) {
+      if (!seen.has(b.id)) seen.set(b.id, { ...b, percent: 0 });
+    }
+  }
+  return Array.from(seen.values());
+})();
 
