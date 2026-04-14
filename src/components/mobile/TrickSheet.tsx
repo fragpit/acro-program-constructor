@@ -73,7 +73,7 @@ export default function TrickSheet({ trickId, onClose, onMoveArm }: Props) {
             }}
             className="py-2 text-sm rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-sky-500"
           >
-            Duplicate
+            Copy
           </button>
           <button
             type="button"
