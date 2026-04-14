@@ -1,4 +1,5 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
+import { useSearchParams } from 'react-router-dom';
 import { MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres';
 import type { Manoeuvre } from '../rules/types';
 
@@ -7,6 +8,22 @@ type SortBy = 'section' | 'coeff' | 'name';
 export default function TricksDocs() {
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<SortBy>('section');
+  const [searchParams, setSearchParams] = useSearchParams();
+
+  const activeTrickId = searchParams.get('trick');
+
+  useEffect(() => {
+    if (!activeTrickId) return;
+    const el = document.getElementById(`trick-${activeTrickId}`);
+    if (el) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  }, [activeTrickId]);
+
+  const goToTrick = (id: string) => {
+    setSearchParams({ trick: id }, { replace: false });
+    document
+      .getElementById(`trick-${id}`)
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   const list = useMemo(() => {
     const q = query.trim().toLowerCase();
@@ -53,7 +70,7 @@ export default function TricksDocs() {
       <div className="flex-1 overflow-auto p-4">
         <div className="max-w-4xl mx-auto space-y-3">
           {list.map((m) => (
-            <TrickEntry key={m.id} manoeuvre={m} />
+            <TrickEntry key={m.id} manoeuvre={m} onNavigate={goToTrick} />
           ))}
           {list.length === 0 && (
             <div className="text-center text-slate-500 py-10">Nothing matches.</div>
@@ -64,7 +81,13 @@ export default function TricksDocs() {
   );
 }
 
-function TrickEntry({ manoeuvre: m }: { manoeuvre: Manoeuvre }) {
+function TrickEntry({
+  manoeuvre: m,
+  onNavigate,
+}: {
+  manoeuvre: Manoeuvre;
+  onNavigate: (id: string) => void;
+}) {
   const flags: string[] = [];
   if (m.mustBeFirst) flags.push('must be first');
   if (m.cannotBeLastTwo) flags.push('cannot be in last two');
@@ -143,11 +166,7 @@ function TrickEntry({ manoeuvre: m }: { manoeuvre: Manoeuvre }) {
                 <button
                   key={id}
                   type="button"
-                  onClick={() =>
-                    document
-                      .getElementById(`trick-${id}`)
-                      ?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                  }
+                  onClick={() => onNavigate(id)}
                   className="px-2 py-0.5 rounded bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 hover:underline"
                 >
                   {target?.name ?? id}
