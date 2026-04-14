@@ -34,6 +34,7 @@ interface ProgramState {
   loadSavedProgram: (name: string) => void;
   deleteSavedProgram: (name: string) => void;
   newProgram: () => void;
+  importProgram: (program: Program, name: string | null) => void;
 }
 
 function recompute(program: Program): Violation[] {
@@ -110,6 +111,18 @@ export const useProgramStore = create<ProgramState>()(
         program,
         violations: recompute(program),
         currentName: null,
+        selectedTrickId: null,
+      };
+    }),
+
+  importProgram: (program, name) =>
+    set(() => {
+      const cloned: Program = JSON.parse(JSON.stringify(program));
+      if (!Array.isArray(cloned.defaultBonuses)) cloned.defaultBonuses = [];
+      return {
+        program: cloned,
+        violations: recompute(cloned),
+        currentName: name,
         selectedTrickId: null,
       };
     }),

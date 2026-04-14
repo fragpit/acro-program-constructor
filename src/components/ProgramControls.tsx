@@ -1,13 +1,19 @@
 import { useEffect, useRef, useState } from 'react';
 import { useProgramStore } from '../store/program-store';
+import { exportProgramJson, importProgramJson } from '../io/program-json';
+import { exportProgramMarkdown } from '../io/program-markdown';
 
 export default function ProgramControls() {
+  const program = useProgramStore((s) => s.program);
+  const violations = useProgramStore((s) => s.violations);
   const currentName = useProgramStore((s) => s.currentName);
   const savedPrograms = useProgramStore((s) => s.savedPrograms);
   const saveProgramAs = useProgramStore((s) => s.saveProgramAs);
   const loadSavedProgram = useProgramStore((s) => s.loadSavedProgram);
   const deleteSavedProgram = useProgramStore((s) => s.deleteSavedProgram);
   const newProgram = useProgramStore((s) => s.newProgram);
+  const importProgram = useProgramStore((s) => s.importProgram);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const [openMenu, setOpenMenu] = useState<'save' | 'load' | null>(null);
   const [saveName, setSaveName] = useState('');
@@ -26,6 +32,46 @@ export default function ProgramControls() {
   function openSave() {
     setSaveName(currentName ?? '');
     setOpenMenu(openMenu === 'save' ? null : 'save');
+  }
+
+  function safeFileName(base: string, ext: string): string {
+    const cleaned = base.replace(/[^a-zA-Z0-9._-]+/g, '_').replace(/^_+|_+$/g, '');
+    return `${cleaned || 'program'}.${ext}`;
+  }
+
+  function download(filename: string, content: string, mime: string) {
+    const blob = new Blob([content], { type: mime });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    a.remove();
+    URL.revokeObjectURL(url);
+  }
+
+  function onExportJson() {
+    const base = currentName ?? 'program';
+    download(safeFileName(base, 'apc.json'), exportProgramJson(program, currentName), 'application/json');
+  }
+
+  function onExportMarkdown() {
+    const base = currentName ?? 'program';
+    download(safeFileName(base, 'md'), exportProgramMarkdown(program, currentName, violations), 'text/markdown');
+  }
+
+  async function onImportFile(file: File) {
+    try {
+      const text = await file.text();
+      const { program: imported, name } = importProgramJson(text);
+      if (program.runs.some((r) => r.tricks.length > 0)) {
+        if (!confirm('Replace the current program with the imported one?')) return;
+      }
+      importProgram(imported, name);
+    } catch (err) {
+      alert(`Import failed: ${err instanceof Error ? err.message : String(err)}`);
+    }
   }
 
   function confirmSave() {
@@ -73,6 +119,46 @@ export default function ProgramControls() {
       >
         New
       </button>
+
+      <div className="h-4 w-px bg-slate-200 dark:bg-slate-700" />
+
+      <button
+        type="button"
+        onClick={onExportJson}
+        className="px-2 py-0.5 text-xs rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400"
+        title="Download program as JSON (re-importable)"
+      >
+        Export JSON
+      </button>
+
+      <button
+        type="button"
+        onClick={onExportMarkdown}
+        className="px-2 py-0.5 text-xs rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400"
+        title="Download human-readable markdown report"
+      >
+        Export MD
+      </button>
+
+      <button
+        type="button"
+        onClick={() => fileInputRef.current?.click()}
+        className="px-2 py-0.5 text-xs rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400"
+        title="Import program from JSON file"
+      >
+        Import
+      </button>
+      <input
+        ref={fileInputRef}
+        type="file"
+        accept=".json,application/json"
+        className="hidden"
+        onChange={(e) => {
+          const file = e.target.files?.[0];
+          if (file) void onImportFile(file);
+          e.target.value = '';
+        }}
+      />
 
       {openMenu === 'save' && (
         <div className="absolute top-full left-0 mt-1 w-72 z-20 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-2 space-y-2">
