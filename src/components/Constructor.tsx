@@ -10,6 +10,9 @@ import {
   type DragEndEvent,
   DragOverlay,
   type DragStartEvent,
+  pointerWithin,
+  rectIntersection,
+  type CollisionDetection,
 } from '@dnd-kit/core';
 import { BONUS_CATALOG, MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres';
 import { MAX_RUNS } from '../data/competition-types';
@@ -109,7 +112,12 @@ export default function Constructor() {
   }
 
   return (
-    <DndContext sensors={sensors} onDragStart={onDragStart} onDragEnd={onDragEnd}>
+    <DndContext
+      sensors={sensors}
+      collisionDetection={prioritizeSmallestDroppable}
+      onDragStart={onDragStart}
+      onDragEnd={onDragEnd}
+    >
       <div className="flex h-full min-h-0">
         <aside className="w-72 shrink-0 border-r border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900 flex flex-col">
           <div className="p-3 border-b border-slate-200 dark:border-slate-700 space-y-2">
@@ -355,7 +363,7 @@ function RunColumn({
           </button>
         )}
       </div>
-      <div className="flex-1 p-2 space-y-1 flex flex-col">
+      <RunDropArea runIndex={runIndex} insertIndex={tricks.length}>
         {tricks.length === 0 ? (
           <EmptyDropZone runIndex={runIndex} />
         ) : (
@@ -377,7 +385,7 @@ function RunColumn({
             ))}
           </>
         )}
-      </div>
+      </RunDropArea>
       {tricks.length > 0 && (
         <div className="px-3 py-1.5 border-t border-slate-200 dark:border-slate-700 text-xs text-slate-600 dark:text-slate-400 space-y-0.5">
           <div className="flex justify-between" title="Technicity: average of the 3 highest coefficients (max 2 above 1.95)">
@@ -419,6 +427,51 @@ function RunColumn({
           )}
         </div>
       )}
+    </div>
+  );
+}
+
+/**
+ * When multiple droppables overlap (inner between-trick zones sit on top of the
+ * whole run column), prefer the one with the smallest rect. This lets a pilot
+ * drop onto any empty space in a run to append, while still hitting the
+ * precise between-trick slots when aimed carefully.
+ */
+const prioritizeSmallestDroppable: CollisionDetection = (args) => {
+  const pointer = pointerWithin(args);
+  if (pointer.length > 0) {
+    return [...pointer].sort((a, b) => {
+      const ra = args.droppableRects.get(a.id);
+      const rb = args.droppableRects.get(b.id);
+      const areaA = ra ? ra.width * ra.height : Infinity;
+      const areaB = rb ? rb.width * rb.height : Infinity;
+      return areaA - areaB;
+    });
+  }
+  return rectIntersection(args);
+};
+
+function RunDropArea({
+  runIndex,
+  insertIndex,
+  children,
+}: {
+  runIndex: number;
+  insertIndex: number;
+  children: React.ReactNode;
+}) {
+  const { setNodeRef, isOver } = useDroppable({
+    id: `drop_run_${runIndex}`,
+    data: { runIndex, insertIndex },
+  });
+  return (
+    <div
+      ref={setNodeRef}
+      className={`flex-1 p-2 space-y-1 flex flex-col rounded transition-colors ${
+        isOver ? 'bg-sky-500/5 ring-1 ring-sky-400/40 ring-inset' : ''
+      }`}
+    >
+      {children}
     </div>
   );
 }
