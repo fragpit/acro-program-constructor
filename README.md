@@ -44,10 +44,18 @@ Node 22 (pinned via `.mise.toml`).
 
 ## Deployment
 
-Pushes to `main` or `init` trigger
-[.github/workflows/deploy.yml](.github/workflows/deploy.yml), which builds
-and publishes to GitHub Pages. `vite.config.ts` sets `base` to the repo
-name, HashRouter handles client-side routing on Pages.
+Releases are tag-driven. Push a semver tag (`vX.Y.Z`) and
+[.github/workflows/deploy.yml](.github/workflows/deploy.yml) builds and
+publishes to GitHub Pages:
+
+```sh
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+The tag name is injected into the bundle as the app version and shown in
+the header. `vite.config.ts` sets `base` to the repo name, HashRouter
+handles client-side routing on Pages.
 
 ## Project layout
 
