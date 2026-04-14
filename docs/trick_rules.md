@@ -33,11 +33,16 @@ A flipped manoeuvre cannot be one of the last 2 manoeuvres.
 
 Each manoeuvre may have forbidden connections - the manoeuvre
 listed in the right column cannot directly follow the one
-on the left:
+on the left.
+
+"SAT-based combo manoeuvres" means combo tricks that include
+SAT as a component: X-Chopper to SAT, Misty to SAT,
+SAT to Helicopter, Helicopter to SAT, Mactwist to SAT,
+SatFly.
 
 | Manoeuvre                         | Forbidden connection to           |
 | --------------------------------- | --------------------------------- |
-| SAT                               | combo manoeuvres                  |
+| SAT                               | SAT-based combo manoeuvres        |
 | Misty to SAT                      | SAT                               |
 | Helicopter                        | any helicopter connection         |
 | Misty to Helicopter               | Helicopter                        |
