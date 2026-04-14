@@ -8,6 +8,8 @@ export the program as JSON or a markdown report.
 Fully static - no backend, no database. Runs as a single-page app on
 GitHub Pages.
 
+Live app: <https://fragpit.github.io/acro-program-constructor/>
+
 ## Features
 
 - Trick palette with search, sort and eligibility filtering (ineligible
