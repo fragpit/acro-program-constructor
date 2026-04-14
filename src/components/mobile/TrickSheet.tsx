@@ -7,12 +7,12 @@ interface Props {
   trickId: string | null;
   onClose: () => void;
   onMoveArm: (trickId: string) => void;
+  onCopyArm: (trickId: string) => void;
 }
 
-export default function TrickSheet({ trickId, onClose, onMoveArm }: Props) {
+export default function TrickSheet({ trickId, onClose, onMoveArm, onCopyArm }: Props) {
   const program = useProgramStore((s) => s.program);
   const removeTrick = useProgramStore((s) => s.removeTrick);
-  const copyTrick = useProgramStore((s) => s.copyTrick);
 
   useEffect(() => {
     if (!trickId) return;
@@ -67,13 +67,10 @@ export default function TrickSheet({ trickId, onClose, onMoveArm }: Props) {
           </button>
           <button
             type="button"
-            onClick={() => {
-              copyTrick(placed.id, location!.runIndex, location!.trickIndex + 1);
-              onClose();
-            }}
+            onClick={() => onCopyArm(placed.id)}
             className="py-2 text-sm rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-sky-500"
           >
-            Duplicate
+            Copy
           </button>
           <button
             type="button"

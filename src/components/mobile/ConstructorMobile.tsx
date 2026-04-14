@@ -13,24 +13,34 @@ export default function ConstructorMobile() {
   const currentName = useProgramStore((s) => s.currentName);
   const addTrick = useProgramStore((s) => s.addTrick);
   const moveTrick = useProgramStore((s) => s.moveTrick);
+  const copyTrick = useProgramStore((s) => s.copyTrick);
 
   const [armedManoeuvreId, setArmedManoeuvreId] = useState<string | null>(null);
   const [armedMoveTrickId, setArmedMoveTrickId] = useState<string | null>(null);
+  const [armedCopyTrickId, setArmedCopyTrickId] = useState<string | null>(null);
   const [activeRunIndex, setActiveRunIndex] = useState(0);
   const [sheetTrickId, setSheetTrickId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   function armPalette(id: string | null) {
     setArmedMoveTrickId(null);
+    setArmedCopyTrickId(null);
     setArmedManoeuvreId(id);
   }
   function armMove(trickId: string) {
     setArmedManoeuvreId(null);
+    setArmedCopyTrickId(null);
     setArmedMoveTrickId(trickId);
+  }
+  function armCopy(trickId: string) {
+    setArmedManoeuvreId(null);
+    setArmedMoveTrickId(null);
+    setArmedCopyTrickId(trickId);
   }
   function clearArm() {
     setArmedManoeuvreId(null);
     setArmedMoveTrickId(null);
+    setArmedCopyTrickId(null);
   }
   function handleInsertAt(runIndex: number, index: number) {
     if (armedManoeuvreId) {
@@ -38,6 +48,9 @@ export default function ConstructorMobile() {
       clearArm();
     } else if (armedMoveTrickId) {
       moveTrick(armedMoveTrickId, runIndex, index);
+      clearArm();
+    } else if (armedCopyTrickId) {
+      copyTrick(armedCopyTrickId, runIndex, index);
       clearArm();
     }
   }
@@ -90,9 +103,13 @@ export default function ConstructorMobile() {
 
       <PaletteStrip armedManoeuvreId={armedManoeuvreId} onArm={armPalette} />
 
-      {armedMoveTrickId && (
+      {(armedMoveTrickId || armedCopyTrickId) && (
         <div className="shrink-0 flex items-center gap-2 px-3 py-2 bg-sky-50 dark:bg-sky-950/40 border-b border-sky-200 dark:border-sky-900 text-xs text-sky-800 dark:text-sky-200">
-          <span className="flex-1">Tap a slot to move the trick (any run).</span>
+          <span className="flex-1">
+            {armedMoveTrickId
+              ? 'Tap a slot to move the trick (any run).'
+              : 'Tap a slot to copy the trick (any run).'}
+          </span>
           <button
             type="button"
             onClick={clearArm}
@@ -113,7 +130,7 @@ export default function ConstructorMobile() {
             runIndex={i}
             totalRuns={program.runs.length}
             awtMode={program.awtMode}
-            isArmed={!!armedManoeuvreId || !!armedMoveTrickId}
+            isArmed={!!armedManoeuvreId || !!armedMoveTrickId || !!armedCopyTrickId}
             movingTrickId={armedMoveTrickId}
             onInsertAt={handleInsertAt}
             onOpenTrick={setSheetTrickId}
@@ -148,6 +165,10 @@ export default function ConstructorMobile() {
         onClose={() => setSheetTrickId(null)}
         onMoveArm={(id) => {
           armMove(id);
+          setSheetTrickId(null);
+        }}
+        onCopyArm={(id) => {
+          armCopy(id);
           setSheetTrickId(null);
         }}
       />
