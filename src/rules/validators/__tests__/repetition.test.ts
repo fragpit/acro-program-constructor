@@ -4,7 +4,7 @@ import { MANOEUVRES_BY_ID } from '../../../data/manoeuvres';
 import { placedTrick, run } from './helpers';
 import type { Program } from '../../types';
 
-function prog(runs: ReturnType<typeof run>[], repeatAfterRuns = 0): Program {
+function prog(runs: ReturnType<typeof run>[], repeatAfterRuns = 5): Program {
   return { awtMode: false, runs, repeatAfterRuns, defaultBonuses: [] };
 }
 

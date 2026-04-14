@@ -42,7 +42,7 @@
         ]
       }
     ],
-    "repeatAfterRuns": 0,
+    "repeatAfterRuns": 3,
     "defaultBonuses": []
   }
 }

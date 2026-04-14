@@ -66,8 +66,8 @@ function validateProgram(raw: unknown): Program {
   if (!raw || typeof raw !== 'object') throw new Error('Missing program');
   const p = raw as Record<string, unknown>;
   if (typeof p.awtMode !== 'boolean') throw new Error('program.awtMode must be boolean');
-  if (typeof p.repeatAfterRuns !== 'number' || p.repeatAfterRuns < 0) {
-    throw new Error('program.repeatAfterRuns must be a non-negative number');
+  if (typeof p.repeatAfterRuns !== 'number' || p.repeatAfterRuns < 1) {
+    throw new Error('program.repeatAfterRuns must be >= 1');
   }
   if (!Array.isArray(p.runs)) throw new Error('program.runs must be an array');
   const defaultBonuses = Array.isArray(p.defaultBonuses)
