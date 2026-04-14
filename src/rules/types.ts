@@ -57,6 +57,7 @@ export interface Program {
   awtMode: boolean;
   runs: Run[];
   repeatAfterRuns: number;
+  defaultBonuses: string[];
 }
 
 export interface AffectedCell {

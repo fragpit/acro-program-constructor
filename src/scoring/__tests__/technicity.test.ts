@@ -40,6 +40,7 @@ describe('technicity', () => {
       {
         awtMode: false,
         repeatAfterRuns: 0,
+        defaultBonuses: [],
         runs: [run(placedTrick('sat')), run(placedTrick('stall'))],
       },
       MANOEUVRES_BY_ID,

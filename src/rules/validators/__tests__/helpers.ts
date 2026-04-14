@@ -13,5 +13,5 @@ export function run(...tricks: PlacedTrick[]): Run {
 }
 
 export function program(runs: Run[], awtMode = false): Program {
-  return { awtMode, runs, repeatAfterRuns: 0 };
+  return { awtMode, runs, repeatAfterRuns: 0, defaultBonuses: [] };
 }
