@@ -18,6 +18,7 @@ import { BONUS_CATALOG, MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres'
 import { MAX_RUNS } from '../data/competition-types';
 import { runTechnicity } from '../scoring/technicity';
 import { runBonus } from '../scoring/bonus';
+import { runBonusUsage, BONUS_LIMITS } from '../scoring/bonus-usage';
 import { exclusionsByTrick } from '../scoring/eligibility';
 import { runSymmetry } from '../rules/validators/symmetry';
 import { useProgramStore } from '../store/program-store';
@@ -311,6 +312,7 @@ export default function Constructor() {
                   tricks={run.tricks}
                   technicity={runTechnicity(run, MANOEUVRES_BY_ID)}
                   bonus={runBonus(run, MANOEUVRES_BY_ID)}
+                  bonusUsage={runBonusUsage(run, MANOEUVRES_BY_ID)}
                   awtMode={program.awtMode}
                   choreoPenalty={choreoPenaltyPerRun[runIndex] ?? 0}
                   symmetry={runSymmetry(run.tricks, MANOEUVRES_BY_ID)}
@@ -385,6 +387,7 @@ function RunColumn({
   tricks,
   technicity,
   bonus,
+  bonusUsage,
   awtMode,
   choreoPenalty,
   symmetry,
@@ -398,6 +401,7 @@ function RunColumn({
   tricks: PlacedTrick[];
   technicity: number;
   bonus: number;
+  bonusUsage: ReturnType<typeof runBonusUsage>;
   awtMode: boolean;
   choreoPenalty: number;
   symmetry: ReturnType<typeof runSymmetry>;
@@ -462,6 +466,17 @@ function RunColumn({
             <span>Bonus{awtMode ? ' ≤' : ''}</span>
             <span className="font-mono">+{bonus.toFixed(1)}%</span>
           </div>
+          <div
+            className="flex justify-between text-slate-500 dark:text-slate-400"
+            title="Bonus category slots used per run (FAI 3.5: max 5 twisted / 3 reversed / 2 flipped). Extras are unscored."
+          >
+            <span>Slots</span>
+            <span className="font-mono flex gap-2">
+              <BonusSlot label="T" used={bonusUsage.twisted} limit={BONUS_LIMITS.twisted} />
+              <BonusSlot label="R" used={bonusUsage.reversed} limit={BONUS_LIMITS.reversed} />
+              <BonusSlot label="F" used={bonusUsage.flipped} limit={BONUS_LIMITS.flipped} />
+            </span>
+          </div>
           {choreoPenalty > 0 && (
             <div
               className="flex justify-between text-amber-600 dark:text-amber-400"
@@ -485,6 +500,21 @@ function RunColumn({
         </div>
       )}
     </div>
+  );
+}
+
+function BonusSlot({ label, used, limit }: { label: string; used: number; limit: number }) {
+  const over = used > limit;
+  const full = used === limit;
+  const cls = over
+    ? 'text-red-600 dark:text-red-400'
+    : full
+      ? 'text-amber-600 dark:text-amber-400'
+      : '';
+  return (
+    <span className={cls}>
+      {label} {used}/{limit}
+    </span>
   );
 }
 
