@@ -1,4 +1,4 @@
-import { useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import {
   DndContext,
   PointerSensor,
@@ -47,6 +47,24 @@ export default function Constructor() {
   const selectTrick = useProgramStore((s) => s.selectTrick);
 
   const [activeDrag, setActiveDrag] = useState<{ type: 'palette' | 'cell'; id: string } | null>(null);
+  const altHeldRef = useRef(false);
+
+  useEffect(() => {
+    function sync(e: KeyboardEvent) {
+      altHeldRef.current = e.altKey;
+    }
+    function clear() {
+      altHeldRef.current = false;
+    }
+    window.addEventListener('keydown', sync);
+    window.addEventListener('keyup', sync);
+    window.addEventListener('blur', clear);
+    return () => {
+      window.removeEventListener('keydown', sync);
+      window.removeEventListener('keyup', sync);
+      window.removeEventListener('blur', clear);
+    };
+  }, []);
 
   const sensors = useSensors(
     useSensor(PointerSensor, { activationConstraint: { distance: 5 } }),
@@ -113,7 +131,7 @@ export default function Constructor() {
       addTrick(overData.runIndex, data.manoeuvreId, overData.insertIndex);
     } else if (data.type === 'cell' && data.trickId) {
       const activator = e.activatorEvent as { altKey?: boolean } | null;
-      if (activator?.altKey) {
+      if (altHeldRef.current || activator?.altKey) {
         copyTrick(data.trickId, overData.runIndex, overData.insertIndex);
       } else {
         moveTrick(data.trickId, overData.runIndex, overData.insertIndex);
