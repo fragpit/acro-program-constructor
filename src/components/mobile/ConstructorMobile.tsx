@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useMemo, useState } from 'react';
 import { useProgramStore } from '../../store/program-store';
 import PaletteStrip from './PaletteStrip';
 import RunSwiper from './RunSwiper';
@@ -22,16 +22,7 @@ export default function ConstructorMobile() {
   const [activeRunIndex, setActiveRunIndex] = useState(0);
   const [sheetTrickId, setSheetTrickId] = useState<string | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
-  const [statsExpanded, setStatsExpanded] = useState<boolean>(() => {
-    if (typeof window === 'undefined') return false;
-    return window.localStorage.getItem('apc.mobile-stats-expanded') === '1';
-  });
-  useEffect(() => {
-    window.localStorage.setItem(
-      'apc.mobile-stats-expanded',
-      statsExpanded ? '1' : '0',
-    );
-  }, [statsExpanded]);
+  const [statsExpanded, setStatsExpanded] = useState(false);
 
   function armPalette(id: string | null) {
     setArmedMoveTrickId(null);
