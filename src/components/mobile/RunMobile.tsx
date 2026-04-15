@@ -104,12 +104,25 @@ export default function RunMobile({
               onClick={onToggleStats}
               aria-label="Collapse stats"
               aria-expanded
-              className="w-full flex flex-col gap-2 text-left"
+              className="w-full flex flex-col gap-1.5 text-left"
             >
               <span
-                className="self-center block h-1 w-10 rounded-full bg-slate-300 dark:bg-slate-600"
+                className="self-center inline-flex items-center justify-center h-6 w-10 rounded-full border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 text-slate-500 dark:text-slate-300 shadow-sm"
                 aria-hidden
-              />
+              >
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="2.5"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  className="w-3.5 h-3.5"
+                >
+                  <polyline points="6 9 12 15 18 9" />
+                </svg>
+              </span>
               <span className="grid grid-cols-4 gap-2">
               <Stat label="TC" value={technicity.toFixed(3)} />
               <Stat label={awtMode ? 'Bonus ≤' : 'Bonus'} value={`+${bonus.toFixed(1)}%`} />
