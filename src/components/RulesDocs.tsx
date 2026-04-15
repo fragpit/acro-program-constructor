@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rulesSource from '../../docs/sporting_code_aerobatics_2025.md?raw';
+import { IconLink } from './icons';
 
 interface TocEntry {
   level: 2 | 3;
@@ -36,9 +37,10 @@ function AnchorButton({
         window.setTimeout(() => setCopied(false), 1500);
       }}
       title="Copy link to this section"
-      className="text-sm font-normal text-slate-400 hover:text-sky-600 dark:hover:text-sky-400"
+      aria-label="Copy link to this section"
+      className="inline-flex items-center text-sm font-normal text-slate-400 hover:text-sky-600 dark:hover:text-sky-400"
     >
-      {copied ? 'copied' : '#'}
+      {copied ? <span className="text-xs">copied</span> : <IconLink className="w-4 h-4" />}
     </button>
   );
 }

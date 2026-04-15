@@ -2,6 +2,7 @@ import { useEffect, useMemo, useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { MANOEUVRES, MANOEUVRES_BY_ID } from '../data/manoeuvres';
 import type { Manoeuvre } from '../rules/types';
+import { IconLink } from './icons';
 
 type SortBy = 'section' | 'coeff' | 'name';
 type SortDir = 'asc' | 'desc';
@@ -194,9 +195,10 @@ function TrickEntry({
             window.setTimeout(() => setCopied(false), 1500);
           }}
           title="Copy link to this trick"
-          className="ml-auto text-xs text-slate-400 hover:text-sky-600 dark:hover:text-sky-400"
+          aria-label="Copy link to this trick"
+          className="ml-auto inline-flex items-center text-xs text-slate-400 hover:text-sky-600 dark:hover:text-sky-400"
         >
-          {copied ? 'copied' : '#'}
+          {copied ? <span>copied</span> : <IconLink className="w-4 h-4" />}
         </button>
       </header>
 
