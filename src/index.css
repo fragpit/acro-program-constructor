@@ -5,7 +5,11 @@
 
 html, body, #root {
   margin: 0;
-  height: var(--app-h, 100dvh);
+}
+@media (min-width: 1024px) {
+  html, body, #root {
+    height: 100%;
+  }
 }
 
 body {
