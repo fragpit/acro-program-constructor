@@ -43,6 +43,21 @@ function AnchorButton({
   );
 }
 
+function collapseSoloManoeuvres(md: string): string {
+  const startMarker = '### 1.1 Solo manoeuvres';
+  const endMarker = '### 1.2 Landing manoeuvres';
+  const start = md.indexOf(startMarker);
+  const end = md.indexOf(endMarker);
+  if (start === -1 || end === -1 || end < start) return md;
+  const replacement =
+    `${startMarker}\n\n` +
+    `See the [Solo tricks reference](#/docs/tricks) - each manoeuvre is ` +
+    `documented there with its coefficient, criteria, bonuses and ` +
+    `restrictions (one source of truth; this section would otherwise ` +
+    `duplicate it).\n\n`;
+  return md.slice(0, start) + replacement + md.slice(end);
+}
+
 function extractToc(md: string): TocEntry[] {
   const entries: TocEntry[] = [];
   const lines = md.split('\n');
@@ -66,7 +81,8 @@ export default function RulesDocs() {
   const [query, setQuery] = useState('');
   const [tocOpen, setTocOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const toc = useMemo(() => extractToc(rulesSource), []);
+  const source = useMemo(() => collapseSoloManoeuvres(rulesSource), []);
+  const toc = useMemo(() => extractToc(source), [source]);
   const filteredToc = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return toc;
@@ -185,7 +201,7 @@ export default function RulesDocs() {
               },
             }}
           >
-            {rulesSource}
+            {source}
           </ReactMarkdown>
         </article>
       </div>
