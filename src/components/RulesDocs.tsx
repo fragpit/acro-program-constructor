@@ -3,6 +3,7 @@ import { useSearchParams } from 'react-router-dom';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rulesSource from '../../docs/sporting_code_aerobatics_2025.md?raw';
+import { IconLink } from './icons';
 
 interface TocEntry {
   level: 2 | 3;
@@ -16,6 +17,47 @@ function slugify(text: string): string {
     .replace(/[^\w\s-]/g, '')
     .trim()
     .replace(/\s+/g, '-');
+}
+
+function AnchorButton({
+  slug,
+  onCopy,
+}: {
+  slug: string;
+  onCopy: (slug: string) => void;
+}) {
+  const [copied, setCopied] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={(e) => {
+        e.preventDefault();
+        onCopy(slug);
+        setCopied(true);
+        window.setTimeout(() => setCopied(false), 1500);
+      }}
+      title="Copy link to this section"
+      aria-label="Copy link to this section"
+      className="inline-flex items-center text-sm font-normal text-slate-400 hover:text-sky-600 dark:hover:text-sky-400"
+    >
+      {copied ? <span className="text-xs">copied</span> : <IconLink className="w-4 h-4" />}
+    </button>
+  );
+}
+
+function collapseSoloManoeuvres(md: string): string {
+  const startMarker = '### 1.1 Solo manoeuvres';
+  const endMarker = '### 1.2 Landing manoeuvres';
+  const start = md.indexOf(startMarker);
+  const end = md.indexOf(endMarker);
+  if (start === -1 || end === -1 || end < start) return md;
+  const replacement =
+    `${startMarker}\n\n` +
+    `See the [Solo tricks reference](#/docs/tricks) - each manoeuvre is ` +
+    `documented there with its coefficient, criteria, bonuses and ` +
+    `restrictions (one source of truth; this section would otherwise ` +
+    `duplicate it).\n\n`;
+  return md.slice(0, start) + replacement + md.slice(end);
 }
 
 function extractToc(md: string): TocEntry[] {
@@ -41,7 +83,8 @@ export default function RulesDocs() {
   const [query, setQuery] = useState('');
   const [tocOpen, setTocOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const toc = useMemo(() => extractToc(rulesSource), []);
+  const source = useMemo(() => collapseSoloManoeuvres(rulesSource), []);
+  const toc = useMemo(() => extractToc(source), [source]);
   const filteredToc = useMemo(() => {
     const q = query.trim().toLowerCase();
     if (!q) return toc;
@@ -60,6 +103,15 @@ export default function RulesDocs() {
     setSearchParams({ s: slug }, { replace: false });
     document.getElementById(slug)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     setTocOpen(false);
+  };
+
+  const copySectionLink = async (slug: string) => {
+    const url = `${window.location.origin}${window.location.pathname}#/docs/rules?s=${encodeURIComponent(slug)}`;
+    try {
+      await navigator.clipboard.writeText(url);
+    } catch {
+      // clipboard may be unavailable on insecure contexts
+    }
   };
 
   return (
@@ -120,23 +172,37 @@ export default function RulesDocs() {
             components={{
               h2: ({ children, ...props }) => {
                 const text = String(children);
+                const slug = slugify(text);
                 return (
-                  <h2 id={slugify(text)} {...props}>
-                    {children}
+                  <h2 id={slug} {...props} className="flex items-center gap-2">
+                    <span>{children}</span>
+                    <AnchorButton slug={slug} onCopy={copySectionLink} />
                   </h2>
                 );
               },
               h3: ({ children, ...props }) => {
                 const text = String(children);
+                const slug = slugify(text);
                 return (
-                  <h3 id={slugify(text)} {...props}>
-                    {children}
+                  <h3 id={slug} {...props} className="flex items-center gap-2">
+                    <span>{children}</span>
+                    <AnchorButton slug={slug} onCopy={copySectionLink} />
                   </h3>
+                );
+              },
+              h4: ({ children, ...props }) => {
+                const text = String(children);
+                const slug = slugify(text);
+                return (
+                  <h4 id={slug} {...props} className="flex items-center gap-2">
+                    <span>{children}</span>
+                    <AnchorButton slug={slug} onCopy={copySectionLink} />
+                  </h4>
                 );
               },
             }}
           >
-            {rulesSource}
+            {source}
           </ReactMarkdown>
         </article>
       </div>

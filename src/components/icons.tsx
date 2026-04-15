@@ -27,3 +27,13 @@ export function IconRedo({ className = 'w-4 h-4' }: { className?: string }) {
     </svg>
   );
 }
+
+/** Chain-link icon, used to copy anchor links to sections/tricks. */
+export function IconLink({ className = 'w-4 h-4' }: { className?: string }) {
+  return (
+    <svg {...SVG_PROPS} className={className} aria-hidden="true">
+      <path d="M10 13a5 5 0 0 0 7.07 0l3-3a5 5 0 0 0-7.07-7.07l-1.5 1.5" />
+      <path d="M14 11a5 5 0 0 0-7.07 0l-3 3a5 5 0 0 0 7.07 7.07l1.5-1.5" />
+    </svg>
+  );
+}
