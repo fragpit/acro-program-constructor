@@ -104,8 +104,15 @@ export default function RunMobile({
               onClick={onToggleStats}
               aria-label="Collapse stats"
               aria-expanded
-              className="w-full grid grid-cols-4 gap-2 text-left"
+              className="w-full flex flex-col gap-1.5 text-left"
             >
+              <span
+                className="self-center text-slate-400 dark:text-slate-500 leading-none -mb-1"
+                aria-hidden
+              >
+                ⌄
+              </span>
+              <span className="grid grid-cols-4 gap-2">
               <Stat label="TC" value={technicity.toFixed(3)} />
               <Stat label={awtMode ? 'Bonus ≤' : 'Bonus'} value={`+${bonus.toFixed(1)}%`} />
               <Stat
@@ -119,6 +126,7 @@ export default function RunMobile({
               {choreoPenalty > 0 && (
                 <Stat label="Choreo" value={`-${choreoPenalty}%`} tone="warn" />
               )}
+              </span>
             </button>
           </div>
         ) : (
