@@ -3,9 +3,15 @@
 
 @custom-variant dark (&:where(.dark, .dark *));
 
-html, body, #root {
+html, body {
   margin: 0;
-  height: max(var(--app-h, 0px), 100dvh);
+  height: 100%;
+  overflow: hidden;
+}
+#root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
 }
 
 body {
