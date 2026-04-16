@@ -121,7 +121,14 @@ export default function RunMobile({
               </svg>
               <span className="grid grid-cols-4 gap-2">
               <Stat label="TC" value={technicity.toFixed(3)} />
-              <Stat label={awtMode ? 'Bonus ≤' : 'Bonus'} value={`+${bonus.toFixed(1)}%`} />
+              <Stat
+                label="Bonus"
+                value={
+                  awtMode
+                    ? `+${(bonus * 0.5).toFixed(1)}…+${bonus.toFixed(1)}%`
+                    : `+${bonus.toFixed(1)}%`
+                }
+              />
               <Stat
                 label="Sym"
                 value={symmetry.balanced ? '+1' : '+0'}
@@ -155,9 +162,11 @@ export default function RunMobile({
             </span>
             <span className="justify-self-end font-mono">
               <span className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mr-1.5">
-                {awtMode ? 'Bonus ≤' : 'Bonus'}
+                Bonus
               </span>
-              {`+${bonus.toFixed(1)}%`}
+              {awtMode
+                ? `+${(bonus * 0.5).toFixed(1)}…+${bonus.toFixed(1)}%`
+                : `+${bonus.toFixed(1)}%`}
             </span>
           </button>
         )
