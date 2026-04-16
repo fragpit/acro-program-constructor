@@ -128,6 +128,7 @@ export default function RunMobile({
                     ? `+${(bonus * 0.5).toFixed(1)}…${bonus.toFixed(1)}%`
                     : `+${bonus.toFixed(1)}%`
                 }
+                small={awtMode}
               />
               <Stat
                 label="Sym"
@@ -188,7 +189,7 @@ function InsertSlot({ armed, onTap }: { armed: boolean; onTap: () => void }) {
   );
 }
 
-function Stat({ label, value, tone = 'neutral' }: { label: string; value: string; tone?: 'neutral' | 'ok' | 'warn' }) {
+function Stat({ label, value, tone = 'neutral', small }: { label: string; value: string; tone?: 'neutral' | 'ok' | 'warn'; small?: boolean }) {
   const valueCls =
     tone === 'ok'
       ? 'text-emerald-600 dark:text-emerald-400'
@@ -198,7 +199,7 @@ function Stat({ label, value, tone = 'neutral' }: { label: string; value: string
   return (
     <div className="flex flex-col items-center gap-0.5 rounded bg-slate-50 dark:bg-slate-800/60 px-2 py-1.5">
       <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</span>
-      <span className={`font-mono text-sm ${valueCls}`}>{value}</span>
+      <span className={`font-mono ${small ? 'text-xs' : 'text-sm'} ${valueCls}`}>{value}</span>
     </div>
   );
 }
