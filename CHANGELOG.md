@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.3
 
 - Add import from acroworldtour.com: pick a solo competition and a pilot,
   pull all their runs into the builder in one step
