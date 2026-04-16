@@ -139,6 +139,29 @@ function BuilderDesktop() {
     return totals;
   }, [violations]);
 
+  const programTotal = useMemo(() => {
+    const hasTricks = program.runs.some((r) => r.tricks.length > 0);
+    if (!hasTricks) return null;
+    let total = 0;
+    let totalMin = 0;
+    for (let i = 0; i < program.runs.length; i++) {
+      const run = program.runs[i];
+      if (run.tricks.length === 0) continue;
+      const sym = runSymmetry(run.tricks, MANOEUVRES_BY_ID);
+      const cp = choreoPenaltyPerRun[i] ?? 0;
+      const bd = runScoreBreakdown(run, MANOEUVRES_BY_ID, sym, cp, distribution, quality);
+      total += bd.total;
+      if (program.awtMode) {
+        const bdMin = runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, sym, cp, distribution, quality, 0.5);
+        totalMin += bdMin.total;
+      }
+    }
+    return {
+      total: Math.ceil(total * 1000) / 1000,
+      totalMin: Math.ceil(totalMin * 1000) / 1000,
+    };
+  }, [program, distribution, quality, choreoPenaltyPerRun]);
+
   function onDragStart(e: DragStartEvent) {
     const data = e.active.data.current as { type: 'palette' | 'cell'; manoeuvreId?: string; trickId?: string } | undefined;
     if (!data) return;
@@ -332,7 +355,18 @@ function BuilderDesktop() {
                 </>
               )}
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="ml-auto flex items-center gap-3">
+              {programTotal && (
+                <div className="flex items-center gap-1.5 text-sm" title="Program total score (sum of all runs)">
+                  <span className="text-[11px] uppercase tracking-wide text-slate-500">Score</span>
+                  <span className="font-mono font-semibold text-sky-700 dark:text-sky-300">
+                    {program.awtMode
+                      ? `${programTotal.totalMin.toFixed(3)}…${programTotal.total.toFixed(3)}`
+                      : programTotal.total.toFixed(3)}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={undo}
@@ -362,6 +396,7 @@ function BuilderDesktop() {
               >
                 Reset all
               </button>
+              </div>
             </div>
           </div>
           <div className="flex-1 overflow-auto">
