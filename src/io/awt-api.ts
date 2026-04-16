@@ -1,0 +1,99 @@
+/**
+ * Thin HTTP client for the public acroworldtour.com API.
+ *
+ * All endpoints are CORS-enabled for any origin, so a static build on
+ * GitHub Pages can call them directly. No authentication is required.
+ */
+
+const AWT_API_BASE = 'https://api.acroworldtour.com/public';
+
+export interface AwtCompetitionSummary {
+  id: string;
+  name: string;
+  code: string;
+  type: 'solo' | 'synchro';
+  state: string;
+  start_date: string;
+  end_date: string;
+  location?: string;
+  seasons: string[];
+  published?: boolean;
+  number_of_runs?: number;
+  number_of_pilots?: number;
+}
+
+export interface AwtPilot {
+  civlid: number;
+  name: string;
+  country?: string;
+}
+
+export interface AwtBonus {
+  name: string;
+  bonus: number;
+}
+
+export interface AwtUniqueTrick {
+  name: string;
+  acronym?: string;
+  base_trick: string;
+  uniqueness: string[];
+  bonus_types: string[];
+  bonuses: AwtBonus[];
+  technical_coefficient?: number;
+  bonus?: number;
+}
+
+export interface AwtFinalMarks {
+  score?: number;
+  technical?: number;
+  choreography?: number;
+  landing?: number;
+  bonus?: number;
+}
+
+export interface AwtFlight {
+  pilot?: AwtPilot | null;
+  tricks: AwtUniqueTrick[];
+  did_not_start?: boolean;
+  final_marks?: AwtFinalMarks | null;
+}
+
+export interface AwtRunResults {
+  results: Record<string, AwtFlight[] | undefined>;
+}
+
+export interface AwtCompetitionResultsContainer {
+  runs_results?: AwtRunResults[];
+}
+
+export interface AwtCompetitionWithResults extends AwtCompetitionSummary {
+  results: AwtCompetitionResultsContainer;
+}
+
+async function getJson<T>(url: string): Promise<T> {
+  let response: Response;
+  try {
+    response = await fetch(url, { headers: { Accept: 'application/json' } });
+  } catch (err) {
+    throw new Error(
+      `Network error calling ${url}: ${err instanceof Error ? err.message : String(err)}`,
+    );
+  }
+  if (!response.ok) {
+    throw new Error(`AWT API returned ${response.status} ${response.statusText} for ${url}`);
+  }
+  return (await response.json()) as T;
+}
+
+/** List all competitions (both solo and synchro, all states). */
+export async function fetchCompetitions(): Promise<AwtCompetitionSummary[]> {
+  return getJson<AwtCompetitionSummary[]>(`${AWT_API_BASE}/competitions/`);
+}
+
+/** Fetch a single competition including per-run flight results. */
+export async function fetchCompetition(id: string): Promise<AwtCompetitionWithResults> {
+  return getJson<AwtCompetitionWithResults>(
+    `${AWT_API_BASE}/competitions/${encodeURIComponent(id)}`,
+  );
+}
