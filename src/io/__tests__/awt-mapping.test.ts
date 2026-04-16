@@ -1,6 +1,5 @@
 import { describe, expect, it } from 'vitest';
 import {
-  detectAwtMode,
   extractPilots,
   mapBaseTrickName,
   mapBonusName,
@@ -159,21 +158,6 @@ describe('mapFlightToRun', () => {
   });
 });
 
-describe('detectAwtMode', () => {
-  it('is true when any season code starts with awt', () => {
-    expect(detectAwtMode(['awt-2025'])).toBe(true);
-    expect(detectAwtMode(['awt2024'])).toBe(true);
-    expect(detectAwtMode(['awq-2025', 'awt-2025'])).toBe(true);
-  });
-
-  it('is false for AWQ-only, WAC, or no-season events', () => {
-    expect(detectAwtMode(['awq-2025'])).toBe(false);
-    expect(detectAwtMode(['wac-2023'])).toBe(false);
-    expect(detectAwtMode([])).toBe(false);
-    expect(detectAwtMode(undefined)).toBe(false);
-  });
-});
-
 describe('extractPilots / mapCompetitionToProgram', () => {
   const sampleFlight = (civlid: number, name: string): AwtFlight => ({
     pilot: { civlid, name },
@@ -223,10 +207,10 @@ describe('extractPilots / mapCompetitionToProgram', () => {
     expect(pilots.find((p) => p.name === 'Alice')?.runCount).toBe(2);
   });
 
-  it('mapCompetitionToProgram assembles all runs for a pilot and detects awtMode', () => {
+  it('mapCompetitionToProgram assembles all runs for a pilot in AWQ mode', () => {
     const mapped = mapCompetitionToProgram(competition, 1);
     expect(mapped.pilotName).toBe('Alice');
-    expect(mapped.program.awtMode).toBe(true);
+    expect(mapped.program.awtMode).toBe(false);
     expect(mapped.program.runs).toHaveLength(2);
     expect(mapped.program.runs[0].tricks.map((t) => t.manoeuvreId)).toEqual(['sat', 'tumbling']);
     expect(mapped.unmapped).toEqual([]);

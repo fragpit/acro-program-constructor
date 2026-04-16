@@ -6,7 +6,6 @@ import {
   type AwtCompetitionWithResults,
 } from '../io/awt-api';
 import {
-  detectAwtMode,
   extractPilots,
   mapCompetitionToProgram,
   type PilotSummary,
@@ -231,7 +230,7 @@ export default function AwtImportDialog({ open, onClose, onImported }: Props) {
             <ImportPreview
               pilotName={mapped.pilotName}
               competitionName={competition.name}
-              awtMode={detectAwtMode(competition.seasons)}
+              awtMode={mapped.program.awtMode}
               runCount={mapped.program.runs.length}
               totalTricks={mapped.program.runs.reduce(
                 (sum, r) => sum + r.tricks.length,

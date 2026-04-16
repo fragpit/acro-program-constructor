@@ -223,12 +223,6 @@ export function mapFlightToRun(flight: AwtFlight, runIndex: number): MappedFligh
   return { run, unmapped };
 }
 
-/** True if the competition is part of the AWT (not AWQ or a local event). */
-export function detectAwtMode(seasons: string[] | undefined): boolean {
-  if (!seasons) return false;
-  return seasons.some((s) => s.toLowerCase().startsWith('awt'));
-}
-
 /**
  * Extract all unique pilots who flew in this competition, with flight counts.
  * Looks at every run's overall results and deduplicates by civlid.
@@ -270,7 +264,6 @@ export function mapCompetitionToProgram(
   comp: AwtCompetitionWithResults,
   civlid: number,
 ): MappedCompetition {
-  const awtMode = detectAwtMode(comp.seasons);
   const runs: Run[] = [];
   const unmapped: UnmappedTrick[] = [];
   let pilotName = '';
@@ -292,7 +285,11 @@ export function mapCompetitionToProgram(
     unmapped.push(...mapped.unmapped);
   });
   const program: Program = {
-    awtMode,
+    // Always import in AWQ mode. AWT mode adds restrictions (e.g.
+    // Misty-to-Misty ban) that would flag violations on routines the
+    // pilot actually flew - users can flip the toggle manually if
+    // they want to build against AWT rules.
+    awtMode: false,
     runs,
     repeatAfterRuns: Math.max(1, runs.length || 1),
     defaultBonuses: [],
