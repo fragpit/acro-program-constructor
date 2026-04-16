@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Flip chevron arrows: point up when collapsed, down when expanded
+
 ## v0.5.0
 
 - Add per-run Final Score calculator with expandable breakdown panel

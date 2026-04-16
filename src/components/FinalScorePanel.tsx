@@ -44,7 +44,7 @@ export default function FinalScorePanel({
             className={`w-3 h-3 text-slate-400 transition-transform ${expanded ? 'rotate-180' : ''}`}
             aria-hidden
           >
-            <polyline points="6 9 12 15 18 9" />
+            <polyline points="6 15 12 9 18 15" />
           </svg>
         </span>
       </button>
