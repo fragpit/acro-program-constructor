@@ -1,14 +1,15 @@
 # Changelog
 
-## Unreleased
+## v0.5.0
 
 - Add per-run Final Score calculator with expandable breakdown panel
+- Add program total score in desktop toolbar and mobile header
 - Add configurable score distribution (Technical/Choreo/Landing weights)
-  in burger menu (mobile) and desktop toolbar
+  with linked controls (tech/choreo move together, landing compensates)
+- Add quality correction modifiers (T/C) with 10% step, default 60%
 - AWT mode shows Final Score as a range (bonus scaled T=5…10)
-- Default assumptions: T=10 (perfect execution), C=9+symmetry,
-  L=0 (landing off by default)
-- Score distribution persisted to localStorage independently of program
+- Fix bonus slot colors: green at limit, amber over limit
+- Fix chevron direction consistency on mobile panels
 
 ## v0.4.0
 
