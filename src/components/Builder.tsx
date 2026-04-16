@@ -547,8 +547,6 @@ function RunColumn({
               <div key={t.id}>
                 <TrickCell
                   trick={t}
-                  runIndex={runIndex}
-                  trickIndex={i}
                   highlight={highlights.get(`${runIndex}:${i}`) ?? 'none'}
                   selected={selectedTrickId === t.id}
                   ignoredReasons={ignored.get(t.id)}
