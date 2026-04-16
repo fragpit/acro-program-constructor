@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## v0.6.1
+
 - Fix Final Score breakdown formula: show the repetition penalty factor
   (e.g. `× 87%(rep)` for -13%) and read the symmetry bonus from the
   actual value instead of reverse-engineering it from `cMark`, which
