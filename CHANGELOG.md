@@ -2,11 +2,8 @@
 
 ## Unreleased
 
-- Fix Final Score going negative when the choreo repetition penalty
-  exceeds 100% (e.g. a run stuffed with duplicate tricks). The
-  repetition factor now clamps to zero, so choreo contributes 0 instead
-  of a negative value, and the formula row renders `× 0%(rep)` instead
-  of `× -17%(rep)`
+- Fix Final Score going negative when repetition penalty exceeds 100%:
+  choreo now clamps to 0
 
 ## v0.6.1
 
