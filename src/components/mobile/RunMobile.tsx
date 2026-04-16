@@ -123,7 +123,7 @@ export default function RunMobile({
                 className="self-center w-4 h-4 text-slate-400 dark:text-slate-500"
                 aria-hidden
               >
-                <polyline points="6 15 12 9 18 15" />
+                <polyline points="6 9 12 15 18 9" />
               </svg>
               <span className="grid grid-cols-4 gap-2">
               <Stat label="TC" value={technicity.toFixed(3)} />
@@ -175,7 +175,7 @@ export default function RunMobile({
               className="justify-self-center w-4 h-4 text-slate-400 dark:text-slate-500"
               aria-hidden
             >
-              <polyline points="6 9 12 15 18 9" />
+              <polyline points="6 15 12 9 18 15" />
             </svg>
             <span className={`justify-self-end font-mono ${awtMode ? 'text-xs' : ''}`}>
               <span className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mr-1.5">
