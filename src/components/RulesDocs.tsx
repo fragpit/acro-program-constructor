@@ -45,6 +45,18 @@ function AnchorButton({
   );
 }
 
+/**
+ * Escape bare `>` / `<` before digits inside list items so the
+ * markdown parser does not treat them as blockquotes or HTML tags.
+ * E.g. `- >180 degrees` → `- \>180 degrees`.
+ */
+function escapeAngleBracketsInLists(md: string): string {
+  return md.replace(
+    /^(\s*- )([<>])(\d)/gm,
+    '$1\\$2$3',
+  );
+}
+
 function collapseSoloManoeuvres(md: string): string {
   const startMarker = '### 1.1 Solo manoeuvres';
   const endMarker = '### 1.2 Landing manoeuvres';
@@ -83,7 +95,10 @@ export default function RulesDocs() {
   const [query, setQuery] = useState('');
   const [tocOpen, setTocOpen] = useState(false);
   const [searchParams, setSearchParams] = useSearchParams();
-  const source = useMemo(() => collapseSoloManoeuvres(rulesSource), []);
+  const source = useMemo(
+    () => escapeAngleBracketsInLists(collapseSoloManoeuvres(rulesSource)),
+    [],
+  );
   const toc = useMemo(() => extractToc(source), [source]);
   const filteredToc = useMemo(() => {
     const q = query.trim().toLowerCase();
