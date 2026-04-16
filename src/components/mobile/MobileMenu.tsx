@@ -9,7 +9,6 @@ import { isDistributionDefault } from '../../scoring/final-score';
 import DistributionEditor from '../DistributionEditor';
 import QualityCorrectionEditor from '../QualityCorrectionEditor';
 import ThemeToggle from '../ThemeToggle';
-import { IconUndo, IconRedo } from '../icons';
 import NumberStepper from '../NumberStepper';
 
 interface Props {
@@ -28,10 +27,6 @@ export default function MobileMenu({ open, onClose }: Props) {
   const setDistribution = useScoreSettings((s) => s.setDistribution);
   const quality = useScoreSettings((s) => s.quality);
   const setQuality = useScoreSettings((s) => s.setQuality);
-  const undo = useProgramStore((s) => s.undo);
-  const redo = useProgramStore((s) => s.redo);
-  const canUndo = useProgramStore((s) => s.past.length > 0);
-  const canRedo = useProgramStore((s) => s.future.length > 0);
   const [defaultBonusesOpen, setDefaultBonusesOpen] = useState(false);
 
   if (!open) return null;
@@ -60,30 +55,6 @@ export default function MobileMenu({ open, onClose }: Props) {
           <section>
             <h3 className="text-[11px] uppercase text-slate-500 mb-2">File</h3>
             <MobileFileControls onImported={onClose} />
-          </section>
-
-          <section>
-            <h3 className="text-[11px] uppercase text-slate-500 mb-2">History</h3>
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={undo}
-                disabled={!canUndo}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 disabled:opacity-40"
-              >
-                <IconUndo className="w-4 h-4" />
-                <span>Undo</span>
-              </button>
-              <button
-                type="button"
-                onClick={redo}
-                disabled={!canRedo}
-                className="flex-1 inline-flex items-center justify-center gap-2 px-3 py-2 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 disabled:opacity-40"
-              >
-                <span>Redo</span>
-                <IconRedo className="w-4 h-4" />
-              </button>
-            </div>
           </section>
 
           <section className="space-y-3">
