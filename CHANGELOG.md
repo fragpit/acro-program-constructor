@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.3.24 (2026-04-16)
+
+- Show AWT bonus as range (+X…Y%) instead of upper bound
+- Add CHANGELOG.md
+
 ## v0.3.23 (2026-04-15)
 
 - Remove synchro doc pointer from sporting code reference
