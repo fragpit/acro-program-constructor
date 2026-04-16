@@ -1,4 +1,5 @@
 import type { BonusCategory, Manoeuvre, Program, Violation } from '../types';
+import { getBonusCategory } from '../bonus-category';
 
 const LIMITS: Record<BonusCategory, number> = {
   twisted: 5,
@@ -26,8 +27,8 @@ export function validateBonusLimits(
       if (!m) return;
       const categories = new Set<BonusCategory>();
       for (const bonusId of t.selectedBonuses) {
-        const def = m.availableBonuses.find((ab) => ab.id === bonusId);
-        if (def?.countsAs) categories.add(def.countsAs);
+        const cat = getBonusCategory(m, bonusId);
+        if (cat) categories.add(cat);
       }
       for (const c of categories) byCategory[c].push({ trickIndex });
     });
