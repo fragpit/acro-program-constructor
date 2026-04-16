@@ -20,14 +20,19 @@ import { runTechnicity } from '../scoring/technicity';
 import { runBonus } from '../scoring/bonus';
 import { runBonusUsage, BONUS_LIMITS } from '../scoring/bonus-usage';
 import { exclusionsByTrick } from '../scoring/eligibility';
+import { runScoreBreakdown, runScoreBreakdownAwt, isDistributionDefault, type ScoreDistribution, type QualityCorrection } from '../scoring/final-score';
 import { unrewardedBonusesByTrick } from '../rules/repeated-bonus';
 import { runSymmetry } from '../rules/validators/symmetry';
 import { useProgramStore } from '../store/program-store';
-import type { Manoeuvre, PlacedTrick } from '../rules/types';
+import { useScoreSettings } from '../store/score-settings';
+import type { Manoeuvre, PlacedTrick, Run } from '../rules/types';
 import TrickInfoCard from './TrickInfoCard';
 import ViolationsPanel from './ViolationsPanel';
 import TrickCell from './TrickCell';
 import ProgramControls from './ProgramControls';
+import FinalScorePanel from './FinalScorePanel';
+import DistributionEditor from './DistributionEditor';
+import QualityCorrectionEditor from './QualityCorrectionEditor';
 import BuilderMobile from './mobile/BuilderMobile';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { IconUndo, IconRedo } from './icons';
@@ -57,6 +62,10 @@ function BuilderDesktop() {
   const canRedo = useProgramStore((s) => s.future.length > 0);
   const selectedTrickId = useProgramStore((s) => s.selectedTrickId);
   const selectTrick = useProgramStore((s) => s.selectTrick);
+  const distribution = useScoreSettings((s) => s.distribution);
+  const setDistribution = useScoreSettings((s) => s.setDistribution);
+  const quality = useScoreSettings((s) => s.quality);
+  const setQuality = useScoreSettings((s) => s.setQuality);
 
   const [activeDrag, setActiveDrag] = useState<{ type: 'palette' | 'cell'; id: string } | null>(null);
   const altHeldRef = useRef(false);
@@ -87,6 +96,7 @@ function BuilderDesktop() {
   );
 
   const [defaultBonusesOpen, setDefaultBonusesOpen] = useState(false);
+  const [distributionOpen, setDistributionOpen] = useState(false);
   const [paletteFilter, setPaletteFilter] = useState('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
   const sortedAvailable = useMemo(
@@ -128,6 +138,29 @@ function BuilderDesktop() {
     }
     return totals;
   }, [violations]);
+
+  const programTotal = useMemo(() => {
+    const hasTricks = program.runs.some((r) => r.tricks.length > 0);
+    if (!hasTricks) return null;
+    let total = 0;
+    let totalMin = 0;
+    for (let i = 0; i < program.runs.length; i++) {
+      const run = program.runs[i];
+      if (run.tricks.length === 0) continue;
+      const sym = runSymmetry(run.tricks, MANOEUVRES_BY_ID);
+      const cp = choreoPenaltyPerRun[i] ?? 0;
+      const bd = runScoreBreakdown(run, MANOEUVRES_BY_ID, sym, cp, distribution, quality);
+      total += bd.total;
+      if (program.awtMode) {
+        const bdMin = runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, sym, cp, distribution, quality, 0.5);
+        totalMin += bdMin.total;
+      }
+    }
+    return {
+      total: Math.ceil(total * 1000) / 1000,
+      totalMin: Math.ceil(totalMin * 1000) / 1000,
+    };
+  }, [program, distribution, quality, choreoPenaltyPerRun]);
 
   function onDragStart(e: DragStartEvent) {
     const data = e.active.data.current as { type: 'palette' | 'cell'; manoeuvreId?: string; trickId?: string } | undefined;
@@ -277,7 +310,63 @@ function BuilderDesktop() {
                 </>
               )}
             </div>
-            <div className="ml-auto flex items-center gap-2">
+            <div className="relative">
+              <button
+                type="button"
+                onClick={() => setDistributionOpen((v) => !v)}
+                className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-slate-400"
+                title="Score settings: distribution weights and quality correction"
+              >
+                Score settings
+              </button>
+              {distributionOpen && (
+                <>
+                  <div
+                    className="fixed inset-0 z-10"
+                    onClick={() => setDistributionOpen(false)}
+                  />
+                  <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-3 space-y-3">
+                    <div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-[11px] uppercase text-slate-500">Distribution</div>
+                        {!isDistributionDefault(distribution) && (
+                          <button
+                            type="button"
+                            onClick={() => setDistribution({ technical: 50, choreo: 50, landing: 0 })}
+                            className="text-xs text-slate-500 hover:text-sky-600 dark:hover:text-sky-400"
+                          >
+                            reset
+                          </button>
+                        )}
+                      </div>
+                      <DistributionEditor
+                        distribution={distribution}
+                        onChange={setDistribution}
+                      />
+                    </div>
+                    <div className="border-t border-slate-200 dark:border-slate-700 pt-3">
+                      <div className="text-[11px] uppercase text-slate-500 mb-2">Quality correction</div>
+                      <QualityCorrectionEditor
+                        quality={quality}
+                        onChange={setQuality}
+                      />
+                    </div>
+                  </div>
+                </>
+              )}
+            </div>
+            <div className="ml-auto flex items-center gap-3">
+              {programTotal && (
+                <div className="flex items-center gap-1.5 text-sm" title="Program total score (sum of all runs)">
+                  <span className="text-[11px] uppercase tracking-wide text-slate-500">Score</span>
+                  <span className="font-mono font-semibold text-sky-700 dark:text-sky-300">
+                    {program.awtMode
+                      ? `${programTotal.totalMin.toFixed(3)}…${programTotal.total.toFixed(3)}`
+                      : programTotal.total.toFixed(3)}
+                  </span>
+                </div>
+              )}
+              <div className="flex items-center gap-2">
               <button
                 type="button"
                 onClick={undo}
@@ -307,6 +396,7 @@ function BuilderDesktop() {
               >
                 Reset all
               </button>
+              </div>
             </div>
           </div>
           <div className="flex-1 overflow-auto">
@@ -317,6 +407,7 @@ function BuilderDesktop() {
               {program.runs.map((run, runIndex) => (
                 <RunColumn
                   key={run.id}
+                  run={run}
                   runIndex={runIndex}
                   tricks={run.tricks}
                   technicity={runTechnicity(run, MANOEUVRES_BY_ID)}
@@ -325,6 +416,8 @@ function BuilderDesktop() {
                   awtMode={program.awtMode}
                   choreoPenalty={choreoPenaltyPerRun[runIndex] ?? 0}
                   symmetry={runSymmetry(run.tricks, MANOEUVRES_BY_ID)}
+                  distribution={distribution}
+                  quality={quality}
                   highlights={highlights}
                   ignored={exclusionsByTrick(run, MANOEUVRES_BY_ID)}
                   unrewardedBonuses={unrewardedBonusesByTrick(run, MANOEUVRES_BY_ID)}
@@ -393,6 +486,7 @@ function PaletteCard({ manoeuvre }: { manoeuvre: Manoeuvre }) {
 }
 
 function RunColumn({
+  run,
   runIndex,
   tricks,
   technicity,
@@ -401,6 +495,8 @@ function RunColumn({
   awtMode,
   choreoPenalty,
   symmetry,
+  distribution,
+  quality,
   highlights,
   ignored,
   unrewardedBonuses,
@@ -408,6 +504,7 @@ function RunColumn({
   selectedTrickId,
   onReset,
 }: {
+  run: Run;
   runIndex: number;
   tricks: PlacedTrick[];
   technicity: number;
@@ -416,6 +513,8 @@ function RunColumn({
   awtMode: boolean;
   choreoPenalty: number;
   symmetry: ReturnType<typeof runSymmetry>;
+  distribution: ScoreDistribution;
+  quality: QualityCorrection;
   highlights: Map<string, 'error' | 'warning'>;
   ignored: Map<string, string[]>;
   unrewardedBonuses: Map<string, Set<string>>;
@@ -516,6 +615,13 @@ function RunColumn({
           </div>
         </div>
       )}
+      {tricks.length > 0 && (
+        <FinalScorePanel
+          breakdown={runScoreBreakdown(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, quality)}
+          awtMode={awtMode}
+          awtMin={awtMode ? runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, quality, 0.5) : undefined}
+        />
+      )}
     </div>
   );
 }
@@ -524,9 +630,9 @@ function BonusSlot({ label, used, limit }: { label: string; used: number; limit:
   const over = used > limit;
   const full = used === limit;
   const cls = over
-    ? 'text-red-600 dark:text-red-400'
+    ? 'text-amber-600 dark:text-amber-400'
     : full
-      ? 'text-amber-600 dark:text-amber-400'
+      ? 'text-emerald-600 dark:text-emerald-400'
       : '';
   return (
     <span className={cls}>

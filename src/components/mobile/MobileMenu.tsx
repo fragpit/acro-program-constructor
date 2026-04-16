@@ -3,7 +3,11 @@ import { Link } from 'react-router-dom';
 import { BONUS_CATALOG } from '../../data/manoeuvres';
 import { MAX_RUNS } from '../../data/competition-types';
 import { useProgramStore } from '../../store/program-store';
+import { useScoreSettings } from '../../store/score-settings';
 import MobileFileControls from './MobileFileControls';
+import { isDistributionDefault } from '../../scoring/final-score';
+import DistributionEditor from '../DistributionEditor';
+import QualityCorrectionEditor from '../QualityCorrectionEditor';
 import ThemeToggle from '../ThemeToggle';
 import { IconUndo, IconRedo } from '../icons';
 import NumberStepper from '../NumberStepper';
@@ -20,6 +24,10 @@ export default function MobileMenu({ open, onClose }: Props) {
   const setDefaultBonuses = useProgramStore((s) => s.setDefaultBonuses);
   const setAwtMode = useProgramStore((s) => s.setAwtMode);
   const resetProgram = useProgramStore((s) => s.resetProgram);
+  const distribution = useScoreSettings((s) => s.distribution);
+  const setDistribution = useScoreSettings((s) => s.setDistribution);
+  const quality = useScoreSettings((s) => s.quality);
+  const setQuality = useScoreSettings((s) => s.setQuality);
   const undo = useProgramStore((s) => s.undo);
   const redo = useProgramStore((s) => s.redo);
   const canUndo = useProgramStore((s) => s.past.length > 0);
@@ -153,6 +161,37 @@ export default function MobileMenu({ open, onClose }: Props) {
                 )}
               </div>
             )}
+          </section>
+
+          <section className="space-y-2">
+            <div className="flex items-center justify-between">
+              <h3 className="text-[11px] uppercase text-slate-500">
+                Score distribution
+              </h3>
+              {!isDistributionDefault(distribution) && (
+                <button
+                  type="button"
+                  onClick={() => setDistribution({ technical: 50, choreo: 50, landing: 0 })}
+                  className="text-xs text-slate-500 hover:text-sky-600 dark:hover:text-sky-400"
+                >
+                  reset
+                </button>
+              )}
+            </div>
+            <DistributionEditor
+              distribution={distribution}
+              onChange={setDistribution}
+            />
+          </section>
+
+          <section className="space-y-2">
+            <h3 className="text-[11px] uppercase text-slate-500">
+              Quality correction
+            </h3>
+            <QualityCorrectionEditor
+              quality={quality}
+              onChange={setQuality}
+            />
           </section>
 
           <section>
