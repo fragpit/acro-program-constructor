@@ -20,7 +20,7 @@ import { runTechnicity } from '../scoring/technicity';
 import { runBonus } from '../scoring/bonus';
 import { runBonusUsage, BONUS_LIMITS } from '../scoring/bonus-usage';
 import { exclusionsByTrick } from '../scoring/eligibility';
-import { runScoreBreakdown, runScoreBreakdownAwt, type ScoreDistribution } from '../scoring/final-score';
+import { runScoreBreakdown, runScoreBreakdownAwt, type ScoreDistribution, type QualityCorrection } from '../scoring/final-score';
 import { unrewardedBonusesByTrick } from '../rules/repeated-bonus';
 import { runSymmetry } from '../rules/validators/symmetry';
 import { useProgramStore } from '../store/program-store';
@@ -32,6 +32,7 @@ import TrickCell from './TrickCell';
 import ProgramControls from './ProgramControls';
 import FinalScorePanel from './FinalScorePanel';
 import DistributionEditor from './DistributionEditor';
+import QualityCorrectionEditor from './QualityCorrectionEditor';
 import BuilderMobile from './mobile/BuilderMobile';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { IconUndo, IconRedo } from './icons';
@@ -63,6 +64,8 @@ function BuilderDesktop() {
   const selectTrick = useProgramStore((s) => s.selectTrick);
   const distribution = useScoreSettings((s) => s.distribution);
   const setDistribution = useScoreSettings((s) => s.setDistribution);
+  const quality = useScoreSettings((s) => s.quality);
+  const setQuality = useScoreSettings((s) => s.setQuality);
 
   const [activeDrag, setActiveDrag] = useState<{ type: 'palette' | 'cell'; id: string } | null>(null);
   const altHeldRef = useRef(false);
@@ -289,12 +292,9 @@ function BuilderDesktop() {
                 type="button"
                 onClick={() => setDistributionOpen((v) => !v)}
                 className="px-2 py-0.5 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-300 hover:border-slate-400"
-                title="Score distribution: Technical / Choreography / Landing weight percentages"
+                title="Score settings: distribution weights and quality correction"
               >
-                Score dist.
-                <span className="ml-1 text-xs text-slate-500">
-                  {distribution.technical}/{distribution.choreo}/{distribution.landing}
-                </span>
+                Score settings
               </button>
               {distributionOpen && (
                 <>
@@ -302,11 +302,21 @@ function BuilderDesktop() {
                     className="fixed inset-0 z-10"
                     onClick={() => setDistributionOpen(false)}
                   />
-                  <div className="absolute left-0 top-full mt-1 z-20 w-56 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-3">
-                    <DistributionEditor
-                      distribution={distribution}
-                      onChange={setDistribution}
-                    />
+                  <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-3 space-y-3">
+                    <div>
+                      <div className="text-[11px] uppercase text-slate-500 mb-2">Distribution</div>
+                      <DistributionEditor
+                        distribution={distribution}
+                        onChange={setDistribution}
+                      />
+                    </div>
+                    <div className="border-t border-slate-200 dark:border-slate-700 pt-3">
+                      <div className="text-[11px] uppercase text-slate-500 mb-2">Quality correction</div>
+                      <QualityCorrectionEditor
+                        quality={quality}
+                        onChange={setQuality}
+                      />
+                    </div>
                   </div>
                 </>
               )}
@@ -361,6 +371,7 @@ function BuilderDesktop() {
                   choreoPenalty={choreoPenaltyPerRun[runIndex] ?? 0}
                   symmetry={runSymmetry(run.tricks, MANOEUVRES_BY_ID)}
                   distribution={distribution}
+                  quality={quality}
                   highlights={highlights}
                   ignored={exclusionsByTrick(run, MANOEUVRES_BY_ID)}
                   unrewardedBonuses={unrewardedBonusesByTrick(run, MANOEUVRES_BY_ID)}
@@ -439,6 +450,7 @@ function RunColumn({
   choreoPenalty,
   symmetry,
   distribution,
+  quality,
   highlights,
   ignored,
   unrewardedBonuses,
@@ -456,6 +468,7 @@ function RunColumn({
   choreoPenalty: number;
   symmetry: ReturnType<typeof runSymmetry>;
   distribution: ScoreDistribution;
+  quality: QualityCorrection;
   highlights: Map<string, 'error' | 'warning'>;
   ignored: Map<string, string[]>;
   unrewardedBonuses: Map<string, Set<string>>;
@@ -558,9 +571,9 @@ function RunColumn({
       )}
       {tricks.length > 0 && (
         <FinalScorePanel
-          breakdown={runScoreBreakdown(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution)}
+          breakdown={runScoreBreakdown(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, quality)}
           awtMode={awtMode}
-          awtMin={awtMode ? runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, 0.5) : undefined}
+          awtMin={awtMode ? runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, quality, 0.5) : undefined}
         />
       )}
     </div>

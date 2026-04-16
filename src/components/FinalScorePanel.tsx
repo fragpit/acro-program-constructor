@@ -91,11 +91,13 @@ export default function FinalScorePanel({
           </div>
           <div className="pt-1 text-[10px] text-slate-500 dark:text-slate-500 space-y-0.5">
             <p>
-              T = 10 (assumed perfect execution)
+              T = 10 × {breakdown.quality.technical}%(Tq)
+              {' '}= {breakdown.tMark}
             </p>
             <p>
-              C = 9 + {breakdown.cMark > 9 ? '1' : '0'}(sym)
-              {breakdown.cMark < 9 && ', reduced by repetition penalty'}
+              C = (9 + {Math.round(breakdown.cMark / (breakdown.quality.choreo / 100)) > 9 ? '1' : '0'}(sym))
+              {' '}× {breakdown.quality.choreo}%(Cq)
+              {' '}= {breakdown.cMark}
             </p>
             {awtMode && (
               <p>

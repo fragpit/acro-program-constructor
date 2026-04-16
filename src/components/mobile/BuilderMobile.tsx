@@ -17,6 +17,7 @@ export default function BuilderMobile() {
   const copyTrick = useProgramStore((s) => s.copyTrick);
   const resetRun = useProgramStore((s) => s.resetRun);
   const distribution = useScoreSettings((s) => s.distribution);
+  const quality = useScoreSettings((s) => s.quality);
 
   const [armedManoeuvreId, setArmedManoeuvreId] = useState<string | null>(null);
   const [armedMoveTrickId, setArmedMoveTrickId] = useState<string | null>(null);
@@ -141,6 +142,7 @@ export default function BuilderMobile() {
             highlights={highlights}
             choreoPenalty={choreoPenaltyPerRun[i] ?? 0}
             distribution={distribution}
+            quality={quality}
             statsExpanded={statsExpanded}
             onToggleStats={() => setStatsExpanded((v) => !v)}
           />

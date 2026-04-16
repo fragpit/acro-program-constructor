@@ -3,7 +3,7 @@ import { BONUS_LIMITS, runBonusUsage } from '../../scoring/bonus-usage';
 import { runBonus } from '../../scoring/bonus';
 import { runTechnicity } from '../../scoring/technicity';
 import { exclusionsByTrick } from '../../scoring/eligibility';
-import { runScoreBreakdown, runScoreBreakdownAwt, type ScoreDistribution } from '../../scoring/final-score';
+import { runScoreBreakdown, runScoreBreakdownAwt, type ScoreDistribution, type QualityCorrection } from '../../scoring/final-score';
 import { unrewardedBonusesByTrick } from '../../rules/repeated-bonus';
 import { runSymmetry } from '../../rules/validators/symmetry';
 import type { Run } from '../../rules/types';
@@ -22,6 +22,7 @@ interface Props {
   highlights: Map<string, 'error' | 'warning'>;
   choreoPenalty: number;
   distribution: ScoreDistribution;
+  quality: QualityCorrection;
   statsExpanded: boolean;
   onToggleStats: () => void;
 }
@@ -38,6 +39,7 @@ export default function RunMobile({
   highlights,
   choreoPenalty,
   distribution,
+  quality,
   statsExpanded,
   onToggleStats,
 }: Props) {
@@ -179,9 +181,9 @@ export default function RunMobile({
       {run.tricks.length > 0 && (
         <div className="bg-white dark:bg-slate-900">
           <FinalScorePanel
-            breakdown={runScoreBreakdown(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution)}
+            breakdown={runScoreBreakdown(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, quality)}
             awtMode={awtMode}
-            awtMin={awtMode ? runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, 0.5) : undefined}
+            awtMin={awtMode ? runScoreBreakdownAwt(run, MANOEUVRES_BY_ID, symmetry, choreoPenalty, distribution, quality, 0.5) : undefined}
           />
         </div>
       )}

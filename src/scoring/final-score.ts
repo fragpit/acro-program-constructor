@@ -15,6 +15,16 @@ export const DEFAULT_DISTRIBUTION: ScoreDistribution = {
   landing: 0,
 };
 
+export interface QualityCorrection {
+  technical: number;
+  choreo: number;
+}
+
+export const DEFAULT_QUALITY: QualityCorrection = {
+  technical: 60,
+  choreo: 60,
+};
+
 export interface RunScoreBreakdown {
   tMark: number;
   cMark: number;
@@ -22,6 +32,7 @@ export interface RunScoreBreakdown {
   tc: number;
   bonusPercent: number;
   distribution: ScoreDistribution;
+  quality: QualityCorrection;
   techFinal: number;
   choreoFinal: number;
   landingFinal: number;
@@ -56,13 +67,15 @@ export function runScoreBreakdown(
   symmetry: RunSymmetry,
   choreoPenalty: number,
   distribution: ScoreDistribution,
+  quality: QualityCorrection,
 ): RunScoreBreakdown {
   const tc = runTechnicity(run, manoeuvres);
   const bonusPercent = runBonus(run, manoeuvres);
 
-  const tMark = 10;
+  const tMark = 10 * (quality.technical / 100);
   const cBase = 9 + (symmetry.balanced ? 1 : 0);
-  const cMark = cBase * (1 - choreoPenalty / 100);
+  const cMark =
+    cBase * (1 - choreoPenalty / 100) * (quality.choreo / 100);
   const lMark = 0;
 
   const techFinal = tMark * tc * (distribution.technical / 100);
@@ -75,12 +88,13 @@ export function runScoreBreakdown(
   );
 
   return {
-    tMark,
+    tMark: ceilTo3(tMark),
     cMark: ceilTo3(cMark),
     lMark,
     tc,
     bonusPercent,
     distribution,
+    quality,
     techFinal: ceilTo3(techFinal),
     choreoFinal: ceilTo3(choreoFinal),
     landingFinal: ceilTo3(landingFinal),
@@ -100,6 +114,7 @@ export function runScoreBreakdownAwt(
   symmetry: RunSymmetry,
   choreoPenalty: number,
   distribution: ScoreDistribution,
+  quality: QualityCorrection,
   bonusFraction: number,
 ): RunScoreBreakdown {
   const base = runScoreBreakdown(
@@ -108,6 +123,7 @@ export function runScoreBreakdownAwt(
     symmetry,
     choreoPenalty,
     distribution,
+    quality,
   );
   const scaledBonusFinal = ceilTo3(
     (base.techFinal + base.choreoFinal) *

@@ -6,6 +6,7 @@ import { useProgramStore } from '../../store/program-store';
 import { useScoreSettings } from '../../store/score-settings';
 import MobileFileControls from './MobileFileControls';
 import DistributionEditor from '../DistributionEditor';
+import QualityCorrectionEditor from '../QualityCorrectionEditor';
 import ThemeToggle from '../ThemeToggle';
 import { IconUndo, IconRedo } from '../icons';
 import NumberStepper from '../NumberStepper';
@@ -24,6 +25,8 @@ export default function MobileMenu({ open, onClose }: Props) {
   const resetProgram = useProgramStore((s) => s.resetProgram);
   const distribution = useScoreSettings((s) => s.distribution);
   const setDistribution = useScoreSettings((s) => s.setDistribution);
+  const quality = useScoreSettings((s) => s.quality);
+  const setQuality = useScoreSettings((s) => s.setQuality);
   const undo = useProgramStore((s) => s.undo);
   const redo = useProgramStore((s) => s.redo);
   const canUndo = useProgramStore((s) => s.past.length > 0);
@@ -166,6 +169,16 @@ export default function MobileMenu({ open, onClose }: Props) {
             <DistributionEditor
               distribution={distribution}
               onChange={setDistribution}
+            />
+          </section>
+
+          <section className="space-y-2">
+            <h3 className="text-[11px] uppercase text-slate-500">
+              Quality correction
+            </h3>
+            <QualityCorrectionEditor
+              quality={quality}
+              onChange={setQuality}
             />
           </section>
 
