@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Move Undo/Redo buttons to the mobile header next to the burger menu
 - Flip chevron arrows: point up when collapsed, down when expanded
 
 ## v0.5.0

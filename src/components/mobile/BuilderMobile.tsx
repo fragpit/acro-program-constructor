@@ -4,6 +4,7 @@ import { runScoreBreakdown, runScoreBreakdownAwt } from '../../scoring/final-sco
 import { runSymmetry } from '../../rules/validators/symmetry';
 import { useProgramStore } from '../../store/program-store';
 import { useScoreSettings } from '../../store/score-settings';
+import { IconUndo, IconRedo } from '../icons';
 import PaletteStrip from './PaletteStrip';
 import RunSwiper from './RunSwiper';
 import RunMobile from './RunMobile';
@@ -19,6 +20,10 @@ export default function BuilderMobile() {
   const moveTrick = useProgramStore((s) => s.moveTrick);
   const copyTrick = useProgramStore((s) => s.copyTrick);
   const resetRun = useProgramStore((s) => s.resetRun);
+  const undo = useProgramStore((s) => s.undo);
+  const redo = useProgramStore((s) => s.redo);
+  const canUndo = useProgramStore((s) => s.past.length > 0);
+  const canRedo = useProgramStore((s) => s.future.length > 0);
   const distribution = useScoreSettings((s) => s.distribution);
   const quality = useScoreSettings((s) => s.quality);
 
@@ -132,14 +137,34 @@ export default function BuilderMobile() {
             )}
           </div>
         </div>
-        <button
-          type="button"
-          onClick={() => setMenuOpen(true)}
-          className="w-9 h-9 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 flex items-center justify-center"
-          aria-label="Open menu"
-        >
-          ≡
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            type="button"
+            onClick={undo}
+            disabled={!canUndo}
+            className="w-9 h-9 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 flex items-center justify-center disabled:opacity-30"
+            aria-label="Undo"
+          >
+            <IconUndo className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={redo}
+            disabled={!canRedo}
+            className="w-9 h-9 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 flex items-center justify-center disabled:opacity-30"
+            aria-label="Redo"
+          >
+            <IconRedo className="w-4 h-4" />
+          </button>
+          <button
+            type="button"
+            onClick={() => setMenuOpen(true)}
+            className="w-9 h-9 rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 flex items-center justify-center"
+            aria-label="Open menu"
+          >
+            ≡
+          </button>
+        </div>
       </header>
 
       <PaletteStrip armedManoeuvreId={armedManoeuvreId} onArm={armPalette} />
