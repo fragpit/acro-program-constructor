@@ -1,5 +1,10 @@
 # Changelog
 
+## v0.6.4
+
+- Group refresh and close buttons on the right of the AWT import dialog
+  header
+
 ## v0.6.3
 
 - Add import from acroworldtour.com: pick a solo competition and a pilot,
