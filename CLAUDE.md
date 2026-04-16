@@ -101,6 +101,7 @@ Stop there. Do **not** merge, tag, or delete the branch until explicitly asked.
 
 Do everything above, then **finalize**:
 
+1. Add changes to CHANGELOG.md
 1. Merge the PR (squash).
 2. Switch to the default branch (`main`) and pull.
 3. Bump the release tag. The user must specify `patch`, `minor` or `major`; if they didn't, ask. Bumping rules below.
