@@ -21,7 +21,7 @@ export default function App() {
           <Link to="/docs/rules" className="hover:text-sky-600 dark:hover:text-sky-400">Rules</Link>
           <Link to="/docs/tricks" className="hover:text-sky-600 dark:hover:text-sky-400">Tricks</Link>
           <a
-            href="https://github.com/fragpit/acro-program-constructor/issues"
+            href="https://github.com/fragpit/acro-routine-builder/issues"
             target="_blank"
             rel="noopener noreferrer"
             aria-label="GitHub issues"

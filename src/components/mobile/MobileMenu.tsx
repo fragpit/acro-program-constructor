@@ -203,7 +203,7 @@ export default function MobileMenu({ open, onClose }: Props) {
                 Tricks
               </Link>
               <a
-                href="https://github.com/fragpit/acro-program-constructor/issues"
+                href="https://github.com/fragpit/acro-routine-builder/issues"
                 target="_blank"
                 rel="noopener noreferrer"
                 title="GitHub issues"
