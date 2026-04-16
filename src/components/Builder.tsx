@@ -31,7 +31,7 @@ import ViolationsPanel from './ViolationsPanel';
 import TrickCell from './TrickCell';
 import ProgramControls from './ProgramControls';
 import FinalScorePanel from './FinalScorePanel';
-import DistributionEditor from './DistributionEditor';
+import DistributionEditor, { isDistributionDefault } from './DistributionEditor';
 import QualityCorrectionEditor from './QualityCorrectionEditor';
 import BuilderMobile from './mobile/BuilderMobile';
 import { useIsMobile } from '../hooks/useIsMobile';
@@ -304,7 +304,18 @@ function BuilderDesktop() {
                   />
                   <div className="absolute left-0 top-full mt-1 z-20 w-64 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-3 space-y-3">
                     <div>
-                      <div className="text-[11px] uppercase text-slate-500 mb-2">Distribution</div>
+                      <div className="flex items-center justify-between mb-2">
+                        <div className="text-[11px] uppercase text-slate-500">Distribution</div>
+                        {!isDistributionDefault(distribution) && (
+                          <button
+                            type="button"
+                            onClick={() => setDistribution({ technical: 50, choreo: 50, landing: 0 })}
+                            className="text-xs text-slate-500 hover:text-sky-600 dark:hover:text-sky-400"
+                          >
+                            reset
+                          </button>
+                        )}
+                      </div>
                       <DistributionEditor
                         distribution={distribution}
                         onChange={setDistribution}

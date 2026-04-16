@@ -5,7 +5,7 @@ import { MAX_RUNS } from '../../data/competition-types';
 import { useProgramStore } from '../../store/program-store';
 import { useScoreSettings } from '../../store/score-settings';
 import MobileFileControls from './MobileFileControls';
-import DistributionEditor from '../DistributionEditor';
+import DistributionEditor, { isDistributionDefault } from '../DistributionEditor';
 import QualityCorrectionEditor from '../QualityCorrectionEditor';
 import ThemeToggle from '../ThemeToggle';
 import { IconUndo, IconRedo } from '../icons';
@@ -163,9 +163,20 @@ export default function MobileMenu({ open, onClose }: Props) {
           </section>
 
           <section className="space-y-2">
-            <h3 className="text-[11px] uppercase text-slate-500">
-              Score distribution
-            </h3>
+            <div className="flex items-center justify-between">
+              <h3 className="text-[11px] uppercase text-slate-500">
+                Score distribution
+              </h3>
+              {!isDistributionDefault(distribution) && (
+                <button
+                  type="button"
+                  onClick={() => setDistribution({ technical: 50, choreo: 50, landing: 0 })}
+                  className="text-xs text-slate-500 hover:text-sky-600 dark:hover:text-sky-400"
+                >
+                  reset
+                </button>
+              )}
+            </div>
             <DistributionEditor
               distribution={distribution}
               onChange={setDistribution}

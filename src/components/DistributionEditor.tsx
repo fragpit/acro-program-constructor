@@ -60,15 +60,18 @@ function linkedStep(
   return { technical: newT, choreo: newC, landing: newL };
 }
 
+export function isDistributionDefault(d: ScoreDistribution) {
+  return (
+    d.technical === DEFAULT_DISTRIBUTION.technical &&
+    d.choreo === DEFAULT_DISTRIBUTION.choreo &&
+    d.landing === DEFAULT_DISTRIBUTION.landing
+  );
+}
+
 export default function DistributionEditor({
   distribution,
   onChange,
 }: Props) {
-  const isDefault =
-    distribution.technical === DEFAULT_DISTRIBUTION.technical &&
-    distribution.choreo === DEFAULT_DISTRIBUTION.choreo &&
-    distribution.landing === DEFAULT_DISTRIBUTION.landing;
-
   function step(key: keyof ScoreDistribution, delta: number) {
     const next = linkedStep(distribution, key, delta);
     if (next) onChange(next);
@@ -123,17 +126,6 @@ export default function DistributionEditor({
           </div>
         );
       })}
-      {!isDefault && (
-        <div className="flex justify-end">
-          <button
-            type="button"
-            onClick={() => onChange({ ...DEFAULT_DISTRIBUTION })}
-            className="text-xs text-slate-500 hover:text-sky-600 dark:hover:text-sky-400"
-          >
-            reset
-          </button>
-        </div>
-      )}
     </div>
   );
 }
