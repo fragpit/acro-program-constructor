@@ -4,15 +4,14 @@
 приоритетам. Составлен на основе анализа кода и
 [docs/claude_plan.md](claude_plan.md).
 
-!!! Нужно понять как участвуют бонусы в общей формуле. Похоже они важнее, и надо сместить акцент в визуализации с tc на бонусы.
+## P0 - разное
 
-## Граф чейнинга
-
-- **Chaining** (1.5/8) - manoeuvres must be as chained as
+- [ ] Нужно понять как участвуют бонусы в общей формуле.
+  Похоже они важнее, и     надо сместить акцент в визуализации с tc на бонусы.
+- [ ] **Chaining** (1.5/8) - manoeuvres must be as chained as
   possible, least amount of time wasted between tricks
-
-нужно собрать инфу какие трюки чейнятся и построить граф.
-далее можно например давай подсказу. или сделать кнопку add chain.
+  нужно собрать инфу какие трюки чейнятся и построить граф.
+  далее можно например давать подсказу. или сделать кнопку add chain.
 
 ## P1 - функциональные пробелы
 
@@ -68,22 +67,3 @@
 - [ ] **Lighthouse / bundle-size** пройтись по production-сборке:
   react-markdown + remark-gfm тяжёлые, можно lazy-load документацию
   через React.lazy, чтобы не тащить в initial bundle конструктора.
-
-## Потенциально лишние файлы
-
-Проверил [git ls-files](../) - прямо мусорных файлов нет, всё
-tracked. `.DS_Store`, `dist/`, `*.tsbuildinfo` корректно в
-[.gitignore](../.gitignore). Однако есть кандидаты на удаление:
-
-- [ ] `docs/sporting_code_aerobatics_2025.pdf`
-  (266 KB) - исходный PDF, который уже сконвертирован в
-  `sporting_code_aerobatics_2025.md`. Markdown-версия канонична
-  (CLAUDE.md запрещает её менять), PDF в репозитории избыточен и
-  раздувает клоны.
-- [ ] `docs/sporting_code_aerobatics_2025_synchro.md` - synchro out
-  of scope по CLAUDE.md. Если синхро не планируется даже в
-  обозримом будущем - удалить (или вынести в отдельный `docs/out-of-scope/`).
-- [ ] `docs/trick_list.md` - таблица с сайта Acro World Tour,
-  пересекается с [trick_rules.md](trick_rules.md) и со страницей
-  `/docs/tricks`, генерируемой из [manoeuvres.ts](../src/data/manoeuvres.ts).
-  Если не используется как independent reference - удалить.
