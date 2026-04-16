@@ -1045,19 +1045,19 @@ the bonus won't be awarded.
 
 #### 3.5.2 Unplanned change of direction
 
-- <90 degrees: 0 to 2.5 points reduction
+- \<90 degrees: 0 to 2.5 points reduction
 - 90 to 180 degrees: 2.5 to 5 points reduction
-- >180 degrees: 5 to 8 points reduction
+- \>180 degrees: 5 to 8 points reduction
 
 #### 3.5.3 Cravat
 
-- <10% and recovery in less than 3s: 2.5 points reduction
-- >50% and recovery in more than 3s: 2.5 to 8 points
+- \<10% and recovery in less than 3s: 2.5 points reduction
+- \>50% and recovery in more than 3s: 2.5 to 8 points
   reduction
 
 #### 3.5.4 Unplanned twist
 
-- <1 turn: 2.5 to 5 points reduction
+- \<1 turn: 2.5 to 5 points reduction
 - 1 turn or more: 5 to 8 points reduction
 
 ### 3.6 Penalties and warnings

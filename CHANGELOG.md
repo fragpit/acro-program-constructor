@@ -1,5 +1,9 @@
 # Changelog
 
+## v0.3.26 (2026-04-16)
+
+- Escape `>` and `<` in sporting code source markdown
+
 ## v0.3.25 (2026-04-16)
 
 - Fix `>` and `<` rendered as blockquotes/HTML in Rules docs
