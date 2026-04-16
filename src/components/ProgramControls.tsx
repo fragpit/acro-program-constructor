@@ -3,6 +3,7 @@ import { useProgramStore } from '../store/program-store';
 import { exportProgramJson, importProgramJson } from '../io/program-json';
 import { exportProgramMarkdown } from '../io/program-markdown';
 import { download, safeFileName } from '../io/download';
+import AwtImportDialog from './AwtImportDialog';
 
 export default function ProgramControls() {
   const program = useProgramStore((s) => s.program);
@@ -42,6 +43,7 @@ export default function ProgramControls() {
 
   const [openMenu, setOpenMenu] = useState<'save' | 'load' | null>(null);
   const [saveName, setSaveName] = useState('');
+  const [awtDialogOpen, setAwtDialogOpen] = useState(false);
   const rootRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -167,6 +169,17 @@ export default function ProgramControls() {
           e.target.value = '';
         }}
       />
+
+      <button
+        type="button"
+        onClick={() => setAwtDialogOpen(true)}
+        className="px-2 py-0.5 text-xs rounded border border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 hover:border-sky-500 hover:text-sky-600 dark:hover:text-sky-400"
+        title="Import a pilot's runs from acroworldtour.com"
+      >
+        Import from AWT
+      </button>
+
+      <AwtImportDialog open={awtDialogOpen} onClose={() => setAwtDialogOpen(false)} />
 
       {openMenu === 'save' && (
         <div className="absolute top-full left-0 mt-1 w-72 z-20 rounded border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 shadow-lg p-2 space-y-2">

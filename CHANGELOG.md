@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Add import from acroworldtour.com: pick a solo competition and a pilot,
+  pull all their runs into the builder in one step
+
 ## v0.6.2
 
 - Fix Final Score going negative when repetition penalty exceeds 100%:
