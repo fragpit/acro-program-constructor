@@ -21,6 +21,48 @@ const btnCls =
   'disabled:opacity-30 disabled:hover:bg-transparent ' +
   'disabled:cursor-not-allowed select-none text-sm';
 
+function clamp(n: number) {
+  return Math.max(0, Math.min(100, n));
+}
+
+/**
+ * Linked distribution controls that keep total = 100%:
+ * - tech/choreo move together, landing compensates (±5 each → landing ∓10)
+ * - landing moves by 10, split ±5 to tech and choreo
+ */
+function linkedStep(
+  d: ScoreDistribution,
+  key: keyof ScoreDistribution,
+  delta: number,
+): ScoreDistribution | null {
+  if (key === 'landing') {
+    const ld = delta * 2;
+    const newLanding = clamp(d.landing + ld);
+    const actualDelta = (newLanding - d.landing) / 2;
+    const newT = clamp(d.technical - actualDelta);
+    const newC = clamp(d.choreo - actualDelta);
+    if (
+      newT === d.technical &&
+      newC === d.choreo &&
+      newLanding === d.landing
+    ) {
+      return null;
+    }
+    return { technical: newT, choreo: newC, landing: newLanding };
+  }
+  const newT = clamp(d.technical + delta);
+  const newC = clamp(d.choreo + delta);
+  const newL = clamp(d.landing - (newT - d.technical) - (newC - d.choreo));
+  if (
+    newT === d.technical &&
+    newC === d.choreo &&
+    newL === d.landing
+  ) {
+    return null;
+  }
+  return { technical: newT, choreo: newC, landing: newL };
+}
+
 export default function DistributionEditor({
   distribution,
   onChange,
@@ -36,9 +78,15 @@ export default function DistributionEditor({
     distribution.landing === DEFAULT_DISTRIBUTION.landing;
 
   function step(key: keyof ScoreDistribution, delta: number) {
-    const cur = distribution[key];
-    const next = Math.max(0, Math.min(100, cur + delta));
-    if (next !== cur) onChange({ ...distribution, [key]: next });
+    const next = linkedStep(distribution, key, delta);
+    if (next) onChange(next);
+  }
+
+  function canStep(
+    key: keyof ScoreDistribution,
+    delta: number,
+  ): boolean {
+    return linkedStep(distribution, key, delta) !== null;
   }
 
   return (
@@ -61,7 +109,7 @@ export default function DistributionEditor({
               <button
                 type="button"
                 onClick={() => step(key, -STEP)}
-                disabled={val <= 0}
+                disabled={!canStep(key, -STEP)}
                 aria-label={`Decrease ${label}`}
                 className={btnCls}
               >
@@ -73,7 +121,7 @@ export default function DistributionEditor({
               <button
                 type="button"
                 onClick={() => step(key, STEP)}
-                disabled={val >= 100}
+                disabled={!canStep(key, STEP)}
                 aria-label={`Increase ${label}`}
                 className={btnCls}
               >
