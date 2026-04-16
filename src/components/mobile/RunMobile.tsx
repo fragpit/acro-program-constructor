@@ -231,7 +231,12 @@ function Stat({ label, value, tone = 'neutral', className }: { label: string; va
 
 function SlotStat({ label, used, max }: { label: string; used: number; max: number }) {
   const over = used > max;
-  const valueCls = over ? 'text-red-600 dark:text-red-400' : 'text-slate-800 dark:text-slate-100';
+  const full = used === max;
+  const valueCls = over
+    ? 'text-amber-600 dark:text-amber-400'
+    : full
+      ? 'text-emerald-600 dark:text-emerald-400'
+      : 'text-slate-800 dark:text-slate-100';
   return (
     <div className="flex flex-col items-center gap-0.5 rounded bg-slate-50 dark:bg-slate-800/60 px-2 py-1.5">
       <span className="text-[10px] uppercase tracking-wide text-slate-500 dark:text-slate-400">{label}</span>
