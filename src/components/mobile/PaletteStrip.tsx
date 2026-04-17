@@ -1,29 +1,7 @@
 import { useState } from 'react';
 import { MANOEUVRES_BY_ID } from '../../data/manoeuvres';
-import { STORAGE_KEYS } from '../../store/storage-keys';
+import { loadRecentTricks, pushRecentTrick } from '../../store/recent-tricks';
 import TrickPicker from './TrickPicker';
-
-const MAX_RECENT = 5;
-
-function loadRecent(): string[] {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEYS.recentTricks);
-    if (!raw) return [];
-    const arr = JSON.parse(raw);
-    if (!Array.isArray(arr)) return [];
-    return arr.filter((x): x is string => typeof x === 'string' && !!MANOEUVRES_BY_ID[x]);
-  } catch {
-    return [];
-  }
-}
-
-function saveRecent(ids: string[]) {
-  try {
-    localStorage.setItem(STORAGE_KEYS.recentTricks, JSON.stringify(ids));
-  } catch {
-    /* ignore */
-  }
-}
 
 interface Props {
   armedManoeuvreId: string | null;
@@ -32,14 +10,10 @@ interface Props {
 
 export default function PaletteStrip({ armedManoeuvreId, onArm }: Props) {
   const [pickerOpen, setPickerOpen] = useState(false);
-  const [recent, setRecent] = useState<string[]>(() => loadRecent());
+  const [recent, setRecent] = useState<string[]>(() => loadRecentTricks());
 
   function pushRecent(id: string) {
-    setRecent((prev) => {
-      const next = [id, ...prev.filter((x) => x !== id)].slice(0, MAX_RECENT);
-      saveRecent(next);
-      return next;
-    });
+    setRecent((prev) => pushRecentTrick(prev, id));
   }
 
   function handlePick(id: string) {
