@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.10
 
 - Desktop palette now shows up to 5 recently used tricks at the top of
   the list under a "Recent" header, separated from the full sorted list
