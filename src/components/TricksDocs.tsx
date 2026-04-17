@@ -181,9 +181,9 @@ function TrickEntry({
       className="rounded-lg border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 p-4 scroll-mt-4"
     >
       <header className="flex items-baseline gap-3 mb-2">
-        <span className="text-xs font-mono text-slate-500">{m.sectionNumber}</span>
-        <h2 className="text-base font-semibold text-slate-900 dark:text-slate-100">{m.name}</h2>
-        <span className="text-xs text-slate-500 dark:text-slate-400">
+        <span className="text-sm font-mono text-slate-500">{m.sectionNumber}</span>
+        <h2 className="text-xl font-semibold text-slate-900 dark:text-slate-100">{m.name}</h2>
+        <span className="text-sm text-slate-500 dark:text-slate-400">
           coeff {m.coefficient.toFixed(2)}
         </span>
         <button
@@ -201,7 +201,7 @@ function TrickEntry({
         </button>
       </header>
 
-      <ul className="list-disc pl-5 space-y-0.5 text-sm text-slate-700 dark:text-slate-300">
+      <ul className="list-disc pl-5 space-y-0.5 text-base text-slate-700 dark:text-slate-300">
         {m.description.map((line, i) => (
           <li key={i}>{line}</li>
         ))}
@@ -212,7 +212,7 @@ function TrickEntry({
           {flags.map((f) => (
             <span
               key={f}
-              className="text-xs px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
+              className="text-sm px-1.5 py-0.5 rounded bg-slate-100 dark:bg-slate-800 text-slate-600 dark:text-slate-300"
             >
               {f}
             </span>
@@ -227,7 +227,7 @@ function TrickEntry({
             {m.availableBonuses.map((b) => (
               <span
                 key={b.id}
-                className="text-xs px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
+                className="text-sm px-2 py-0.5 rounded border border-slate-200 dark:border-slate-700 text-slate-700 dark:text-slate-300"
                 title={b.countsAs ? `counts as ${b.countsAs}` : undefined}
               >
                 {b.label} +{b.percent}%
@@ -235,7 +235,7 @@ function TrickEntry({
             ))}
           </div>
           {m.mutualExclusions.length > 0 && (
-            <div className="mt-1 text-xs text-slate-500">
+            <div className="mt-1 text-sm text-slate-500">
               mutually exclusive:{' '}
               {m.mutualExclusions
                 .map((grp) =>
@@ -252,7 +252,7 @@ function TrickEntry({
       {m.forbiddenConnectionTo.length > 0 && (
         <div className="mt-3">
           <div className="text-xs uppercase text-slate-500 mb-1">Forbidden connection to</div>
-          <div className="flex flex-wrap gap-1.5 text-xs">
+          <div className="flex flex-wrap gap-1.5 text-sm">
             {m.forbiddenConnectionTo.map((id) => {
               const target = MANOEUVRES_BY_ID[id];
               return (
