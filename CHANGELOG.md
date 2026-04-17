@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Header nav now includes a Builder link so you can return to the
+  builder from the Rules and Tricks doc pages without going through
+  Home.
+
 ## v0.6.12
 
 - Feedback button in the header replaces the GitHub icon and opens a

@@ -19,6 +19,7 @@ export default function App() {
           <span className="hidden lg:inline">Acro Routine Builder (v{__APP_VERSION__})</span>
         </Link>
         <nav className="ml-auto flex items-center gap-4 text-sm text-slate-500 dark:text-slate-400">
+          <Link to="/builder" className="hover:text-sky-600 dark:hover:text-sky-400">Builder</Link>
           <Link to="/docs/rules" className="hover:text-sky-600 dark:hover:text-sky-400">Rules</Link>
           <Link to="/docs/tricks" className="hover:text-sky-600 dark:hover:text-sky-400">Tricks</Link>
           <FeedbackMenu
