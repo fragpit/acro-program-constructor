@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.6
 
 - Close the burger drawer after loading a saved program (same behavior as
   Import and Import AWT).
