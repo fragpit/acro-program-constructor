@@ -1,5 +1,14 @@
 # Changelog
 
+## Unreleased
+
+- Header nav now includes a Builder link so you can return to the
+  builder from the Rules and Tricks doc pages without going through
+  Home.
+- Mobile header title is now just "ARB" (without the version suffix)
+  so the new nav link fits on one line on narrow screens. The full
+  version is still shown in the mobile drawer menu.
+
 ## v0.6.12
 
 - Feedback button in the header replaces the GitHub icon and opens a
