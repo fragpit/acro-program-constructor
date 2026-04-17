@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Desktop palette now shows up to 5 recently used tricks at the top of
+  the list under a "Recent" header, separated from the full sorted list
+  by a divider. The list is shared with the mobile palette.
+
 ## v0.6.9
 
 - Reversed manoeuvres no longer trigger the cross-run repetition

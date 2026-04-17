@@ -33,6 +33,7 @@ import DesktopMenu from './DesktopMenu';
 import BuilderMobile from './mobile/BuilderMobile';
 import { useIsMobile } from '../hooks/useIsMobile';
 import { useChoreoPenaltyPerRun, useViolationHighlights } from '../hooks/useScoringDerived';
+import { loadRecentTricks, pushRecentTrick } from '../store/recent-tricks';
 import { IconUndo, IconRedo, IconMenu } from './icons';
 
 export default function Builder() {
@@ -112,6 +113,7 @@ function BuilderDesktop() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [paletteFilter, setPaletteFilter] = useState('');
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('asc');
+  const [recent, setRecent] = useState<string[]>(() => loadRecentTricks());
   const sortedAvailable = useMemo(
     () =>
       [...MANOEUVRES]
@@ -119,6 +121,12 @@ function BuilderDesktop() {
         .sort((a, b) => (sortDir === 'asc' ? a.coefficient - b.coefficient : b.coefficient - a.coefficient)),
     [paletteFilter, sortDir],
   );
+  const recentAvailable = useMemo(() => {
+    const q = paletteFilter.toLowerCase();
+    return recent
+      .map((id) => MANOEUVRES_BY_ID[id])
+      .filter((m): m is Manoeuvre => !!m && m.name.toLowerCase().includes(q));
+  }, [recent, paletteFilter]);
 
   const selectedTrick = useMemo(() => {
     if (!selectedTrickId) return null;
@@ -170,6 +178,8 @@ function BuilderDesktop() {
     const data = e.active.data.current as { type: 'palette' | 'cell'; manoeuvreId?: string; trickId?: string };
     if (data.type === 'palette' && data.manoeuvreId) {
       addTrick(overData.runIndex, data.manoeuvreId, overData.insertIndex);
+      const id = data.manoeuvreId;
+      setRecent((prev) => pushRecentTrick(prev, id));
     } else if (data.type === 'cell' && data.trickId) {
       const activator = e.activatorEvent as { altKey?: boolean } | null;
       if (altHeldRef.current || activator?.altKey) {
@@ -210,6 +220,17 @@ function BuilderDesktop() {
             />
           </div>
           <div className="flex-1 overflow-y-auto p-2 space-y-1">
+            {recentAvailable.length > 0 && (
+              <>
+                <div className="px-1 pt-0.5 pb-1 text-[10px] uppercase tracking-wide text-slate-400 dark:text-slate-500">
+                  Recent
+                </div>
+                {recentAvailable.map((m) => (
+                  <PaletteCard key={`recent_${m.id}`} manoeuvre={m} recent />
+                ))}
+                <div className="my-2 border-t border-slate-200 dark:border-slate-700" />
+              </>
+            )}
             {sortedAvailable.map((m) => (
               <PaletteCard key={m.id} manoeuvre={m} />
             ))}
@@ -347,9 +368,9 @@ function PaletteCardPresentation({ manoeuvre }: { manoeuvre: Manoeuvre }) {
   );
 }
 
-function PaletteCard({ manoeuvre }: { manoeuvre: Manoeuvre }) {
+function PaletteCard({ manoeuvre, recent = false }: { manoeuvre: Manoeuvre; recent?: boolean }) {
   const { attributes, listeners, setNodeRef, isDragging } = useDraggable({
-    id: `palette_${manoeuvre.id}`,
+    id: recent ? `palette_recent_${manoeuvre.id}` : `palette_${manoeuvre.id}`,
     data: { type: 'palette', manoeuvreId: manoeuvre.id },
   });
   return (
