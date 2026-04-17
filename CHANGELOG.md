@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.5
 
 - Add burger drawer to desktop builder with File, Program settings,
   Default bonuses, Score distribution, and Quality correction - the
