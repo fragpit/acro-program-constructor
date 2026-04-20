@@ -108,7 +108,7 @@ export default function BuilderMobile() {
   const safeActive = Math.min(activeRunIndex, program.runs.length - 1);
 
   return (
-    <div className="relative flex flex-col h-full min-h-0 bg-slate-50 dark:bg-slate-900">
+    <div className="flex flex-col h-full min-h-0 bg-slate-50 dark:bg-slate-900">
       <header className="shrink-0 flex items-center gap-2 px-3 py-2 border-b border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-900 pt-[calc(0.5rem+env(safe-area-inset-top))]">
         <div className="flex-1 min-w-0">
           <div className="text-sm font-semibold text-slate-800 dark:text-slate-200 truncate">
@@ -157,6 +157,18 @@ export default function BuilderMobile() {
           </button>
         </div>
       </header>
+
+      {!anyArmed && (
+        <div className="shrink-0 flex items-center justify-center px-3 py-2 border-b border-slate-200 dark:border-slate-700 bg-slate-50 dark:bg-slate-900">
+          <button
+            type="button"
+            onClick={() => setPickerOpen(true)}
+            className="px-4 py-1.5 text-sm rounded-full border border-sky-500 bg-sky-500/10 text-sky-700 dark:text-sky-300 font-medium active:bg-sky-500/20"
+          >
+            + Add trick
+          </button>
+        </div>
+      )}
 
       {anyArmed && (
         <div className="shrink-0 flex items-center gap-2 px-3 py-2 bg-sky-50 dark:bg-sky-950/40 border-b border-sky-200 dark:border-sky-900 text-xs text-sky-800 dark:text-sky-200">
@@ -243,16 +255,6 @@ export default function BuilderMobile() {
         recent={recent}
       />
       <MobileMenu open={menuOpen} onClose={() => setMenuOpen(false)} />
-      {!anyArmed && (
-        <button
-          type="button"
-          onClick={() => setPickerOpen(true)}
-          aria-label="Add trick"
-          className="absolute z-30 right-4 bottom-[calc(5rem+env(safe-area-inset-bottom))] w-14 h-14 rounded-full bg-sky-600 text-white text-3xl leading-none shadow-lg active:bg-sky-700 flex items-center justify-center"
-        >
-          +
-        </button>
-      )}
     </div>
   );
 }
