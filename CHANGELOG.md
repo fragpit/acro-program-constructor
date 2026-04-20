@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.14
 
 - Mobile trick cells now have a subtle `✕` remove button on the
   right, matching the desktop cell affordance (slate, red on hover).
