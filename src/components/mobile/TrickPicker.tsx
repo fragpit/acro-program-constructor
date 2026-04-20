@@ -70,10 +70,10 @@ export default function TrickPicker({ open, onClose, onPick, recent = [] }: Prop
                     <button
                       type="button"
                       onClick={() => onPick(m.id)}
-                      className="whitespace-nowrap px-3 py-1.5 rounded-full text-xs border bg-sky-50 dark:bg-sky-950/40 border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-200 active:bg-sky-100 dark:active:bg-sky-900/60 hover:border-sky-500"
+                      className="whitespace-nowrap px-3 py-1.5 rounded-full text-xs border bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200 active:bg-sky-100 dark:active:bg-sky-950/40 hover:border-sky-500"
                     >
                       <span>{m.name}</span>
-                      <span className="ml-1.5 text-[10px] text-sky-600/80 dark:text-sky-300/80">
+                      <span className="ml-1.5 text-[10px] text-slate-500 dark:text-slate-400">
                         {m.coefficient.toFixed(2)}
                       </span>
                     </button>
