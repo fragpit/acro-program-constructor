@@ -4,7 +4,8 @@
 
 - Desktop header title no longer carries the version suffix. The app
   version is now shown as a small footer at the bottom of the Home
-  page (and only there - not in the Builder).
+  page (and only there - not in the Builder), plus as a footer row
+  inside the Feedback popover so it is reachable from every page.
 
 ## v0.6.15
 
