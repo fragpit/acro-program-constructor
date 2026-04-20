@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.19
 
 - Bonus is now scaled by the Tq (technical quality) correction in both
   AWT and AWQ modes. The score breakdown shows the extra multiplier.
