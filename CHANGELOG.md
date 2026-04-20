@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.15
 
 - Mobile recent tricks moved from the palette strip into the
   "+ Add trick" picker as a "Recent" section above the full list.
