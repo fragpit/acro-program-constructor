@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.16
 
 - Desktop header title no longer carries the version suffix. The app
   version is now shown as a small footer at the bottom of the Home
