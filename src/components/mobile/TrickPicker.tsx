@@ -1,13 +1,14 @@
 import { useMemo, useState } from 'react';
-import { MANOEUVRES } from '../../data/manoeuvres';
+import { MANOEUVRES, MANOEUVRES_BY_ID } from '../../data/manoeuvres';
 
 interface Props {
   open: boolean;
   onClose: () => void;
   onPick: (id: string) => void;
+  recent?: string[];
 }
 
-export default function TrickPicker({ open, onClose, onPick }: Props) {
+export default function TrickPicker({ open, onClose, onPick, recent = [] }: Props) {
   const [filter, setFilter] = useState('');
   const list = useMemo(
     () =>
@@ -16,6 +17,11 @@ export default function TrickPicker({ open, onClose, onPick }: Props) {
         .sort((a, b) => a.coefficient - b.coefficient),
     [filter],
   );
+
+  const showRecent = filter.trim() === '' && recent.length > 0;
+  const recentManoeuvres = showRecent
+    ? recent.map((id) => MANOEUVRES_BY_ID[id]).filter((m): m is (typeof MANOEUVRES)[number] => !!m)
+    : [];
 
   if (!open) return null;
 
@@ -53,6 +59,30 @@ export default function TrickPicker({ open, onClose, onPick }: Props) {
           </button>
         </div>
         <div className="flex-1 overflow-y-auto px-3 pb-3">
+          {recentManoeuvres.length > 0 && (
+            <div className="mb-3">
+              <div className="text-[11px] uppercase tracking-wide text-slate-500 dark:text-slate-400 mb-1.5 px-1">
+                Recent
+              </div>
+              <ul className="flex flex-wrap gap-2">
+                {recentManoeuvres.map((m) => (
+                  <li key={`recent-${m.id}`}>
+                    <button
+                      type="button"
+                      onClick={() => onPick(m.id)}
+                      className="whitespace-nowrap px-3 py-1.5 rounded-full text-xs border bg-sky-50 dark:bg-sky-950/40 border-sky-300 dark:border-sky-800 text-sky-800 dark:text-sky-200 active:bg-sky-100 dark:active:bg-sky-900/60 hover:border-sky-500"
+                    >
+                      <span>{m.name}</span>
+                      <span className="ml-1.5 text-[10px] text-sky-600/80 dark:text-sky-300/80">
+                        {m.coefficient.toFixed(2)}
+                      </span>
+                    </button>
+                  </li>
+                ))}
+              </ul>
+              <div className="mt-3 border-t border-slate-200 dark:border-slate-700" />
+            </div>
+          )}
           {list.length === 0 ? (
             <div className="text-sm text-slate-500 px-2 py-6 text-center">
               No tricks match &ldquo;{filter}&rdquo;

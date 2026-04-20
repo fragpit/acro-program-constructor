@@ -1,5 +1,4 @@
 import { useState } from 'react';
-import { MANOEUVRES_BY_ID } from '../../data/manoeuvres';
 import { loadRecentTricks, pushRecentTrick } from '../../store/recent-tricks';
 import TrickPicker from './TrickPicker';
 
@@ -12,23 +11,10 @@ export default function PaletteStrip({ armedManoeuvreId, onArm }: Props) {
   const [pickerOpen, setPickerOpen] = useState(false);
   const [recent, setRecent] = useState<string[]>(() => loadRecentTricks());
 
-  function pushRecent(id: string) {
-    setRecent((prev) => pushRecentTrick(prev, id));
-  }
-
   function handlePick(id: string) {
-    pushRecent(id);
+    setRecent((prev) => pushRecentTrick(prev, id));
     onArm(id);
     setPickerOpen(false);
-  }
-
-  function handleRecentTap(id: string) {
-    if (armedManoeuvreId === id) {
-      onArm(null);
-      return;
-    }
-    pushRecent(id);
-    onArm(id);
   }
 
   return (
@@ -41,43 +27,7 @@ export default function PaletteStrip({ armedManoeuvreId, onArm }: Props) {
         >
           + Add trick
         </button>
-        <div className="flex-1 min-w-0 overflow-x-auto">
-          {recent.length > 0 ? (
-            <ul className="flex gap-2 w-max">
-              {recent.map((id) => {
-                const m = MANOEUVRES_BY_ID[id];
-                if (!m) return null;
-                const armed = id === armedManoeuvreId;
-                return (
-                  <li key={id}>
-                    <button
-                      type="button"
-                      onClick={() => handleRecentTap(id)}
-                      className={`shrink-0 whitespace-nowrap px-3 py-1.5 rounded-full text-xs border transition-colors ${
-                        armed
-                          ? 'bg-sky-600 border-sky-400 text-white shadow-sm'
-                          : 'bg-white dark:bg-slate-800 border-slate-300 dark:border-slate-600 text-slate-700 dark:text-slate-200'
-                      }`}
-                    >
-                      <span>{m.name}</span>
-                      <span
-                        className={`ml-1.5 text-[10px] ${
-                          armed ? 'text-sky-200' : 'text-slate-500 dark:text-slate-400'
-                        }`}
-                      >
-                        {m.coefficient.toFixed(2)}
-                      </span>
-                    </button>
-                  </li>
-                );
-              })}
-            </ul>
-          ) : (
-            <span className="text-[11px] text-slate-400 dark:text-slate-500">
-              Recent tricks will appear here
-            </span>
-          )}
-        </div>
+        <div className="flex-1" />
         {armedManoeuvreId && (
           <button
             type="button"
@@ -91,10 +41,15 @@ export default function PaletteStrip({ armedManoeuvreId, onArm }: Props) {
       </div>
       {armedManoeuvreId && (
         <div className="px-3 pb-2 text-[11px] text-sky-700 dark:text-sky-300">
-          Tap an empty slot below to insert, or tap the chip again to cancel.
+          Tap an empty slot below to insert, or tap Cancel to drop the selection.
         </div>
       )}
-      <TrickPicker open={pickerOpen} onClose={() => setPickerOpen(false)} onPick={handlePick} />
+      <TrickPicker
+        open={pickerOpen}
+        onClose={() => setPickerOpen(false)}
+        onPick={handlePick}
+        recent={recent}
+      />
     </div>
   );
 }

@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Mobile recent tricks moved from the palette strip into the
+  "+ Add trick" picker as a "Recent" section above the full list,
+  freeing the horizontal strip of clutter.
+
 ## v0.6.14
 
 - Mobile trick cells now have a subtle `✕` remove button on the
