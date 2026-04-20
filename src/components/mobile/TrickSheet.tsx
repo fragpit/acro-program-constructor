@@ -51,8 +51,35 @@ export default function TrickSheet({ trickId, onClose, onMoveArm, onCopyArm }: P
         aria-modal="true"
         className="relative bg-white dark:bg-slate-900 rounded-t-2xl shadow-xl max-h-[85vh] flex flex-col animate-[slideUp_0.18s_ease-out] pb-[env(safe-area-inset-bottom)]"
       >
-        <div className="shrink-0 flex justify-center py-2">
+        <div className="shrink-0 relative flex justify-center py-2">
           <span className="block w-10 h-1 rounded-full bg-slate-300 dark:bg-slate-600" />
+          <button
+            type="button"
+            aria-label="Remove trick"
+            onClick={() => {
+              removeTrick(placed.id);
+              onClose();
+            }}
+            className="absolute right-2 top-1/2 -translate-y-1/2 p-2 rounded text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              strokeWidth={2}
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              className="w-5 h-5"
+              aria-hidden="true"
+            >
+              <polyline points="3 6 5 6 21 6" />
+              <path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6" />
+              <path d="M10 11v6" />
+              <path d="M14 11v6" />
+              <path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2" />
+            </svg>
+          </button>
         </div>
         <div className="flex-1 overflow-y-auto">
           <TrickInfoCard manoeuvre={manoeuvre} placedTrick={placed} onClose={onClose} />
@@ -74,13 +101,10 @@ export default function TrickSheet({ trickId, onClose, onMoveArm, onCopyArm }: P
           </button>
           <button
             type="button"
-            onClick={() => {
-              removeTrick(placed.id);
-              onClose();
-            }}
-            className="py-2 text-sm rounded bg-red-600 text-white hover:bg-red-500"
+            onClick={onClose}
+            className="py-2 text-sm rounded bg-sky-600 text-white hover:bg-sky-500"
           >
-            Remove
+            Apply
           </button>
         </div>
       </div>

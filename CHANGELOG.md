@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Mobile trick sheet replaces the red "Remove" button with a primary
+  "Apply" button (closes the sheet). Removal moved to a trash icon at
+  the top of the sheet to reduce accidental taps.
+
 ## v0.6.13
 
 - Header nav now includes a Builder link so you can return to the
