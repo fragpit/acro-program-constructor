@@ -3,8 +3,9 @@
 ## Unreleased
 
 - Mobile trick sheet replaces the red "Remove" button with a primary
-  "Apply" button (closes the sheet). Removal moved to a trash icon at
-  the top of the sheet to reduce accidental taps.
+  "Apply" button (closes the sheet). Removal moved to a muted text
+  link at the end of the trick description so it stays reachable but
+  no longer competes with the primary action.
 
 ## v0.6.13
 
