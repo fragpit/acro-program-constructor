@@ -3,10 +3,10 @@
 ## Unreleased
 
 - Mobile trick sheet replaces the red "Remove" button with a primary
-  "Apply" button (closes the sheet). Removal is now hidden behind a
-  kebab (three-dot) overflow menu in the sheet header, so the
-  destructive action no longer competes for attention with the trick
-  info or primary actions.
+  "Apply" button (closes the sheet). Removal moved to a subtle `✕`
+  button in the sheet header, styled the same as the desktop trick
+  cell remove (slate, red on hover) so it stays unobtrusive but
+  familiar.
 
 ## v0.6.13
 
