@@ -105,8 +105,10 @@ Each run column shows, under the tricks:
 
 Validation runs on every change.
 
-- **Errors** (red) - hard rule breaks that make the run illegal
-  under FAI. The cell gets a red background.
+- **Errors** (red) - hard rule breaks (forbidden connections,
+  repetition window, AWT-specific bans, must-be-first / cannot-be-last
+  placement). The run is still flyable, but under FAI these incur
+  significant score penalties. The cell gets a red background.
 - **Warnings** (amber) - caps that scoring will handle silently
   (high-coefficient above 6 tricks, bonus slots over the limit).
   The run is still flyable; the extras just do not count.
