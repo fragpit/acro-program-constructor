@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.26
 
 - Remove the AWT import wizard. The acroworldtour.com public API is
   currently down, so the "Import AWT" button and dialog were pulled
