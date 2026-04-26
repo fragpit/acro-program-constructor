@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.27
 
 - Pull down from the top to check for app updates. A spinning refresh
   indicator appears, and the app no longer reloads itself mid-session
