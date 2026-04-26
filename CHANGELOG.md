@@ -1,5 +1,11 @@
 # Changelog
 
+## Unreleased
+
+- Pull down from the top to check for app updates. A spinning refresh
+  indicator appears, and the app no longer reloads itself mid-session
+  when a new version is published.
+
 ## v0.6.26
 
 - Remove the AWT import wizard. The acroworldtour.com public API is

@@ -26,14 +26,13 @@ export default defineConfig({
     react(),
     tailwindcss(),
     VitePWA({
-      registerType: 'autoUpdate',
-      injectRegister: 'auto',
+      registerType: 'prompt',
+      injectRegister: null,
       manifest: false,
       manifestFilename: 'site.webmanifest',
       workbox: {
         globPatterns: ['**/*.{js,css,html,svg,png,webmanifest}'],
         cleanupOutdatedCaches: true,
-        clientsClaim: true,
       },
       includeAssets: [
         'favicon.svg',
