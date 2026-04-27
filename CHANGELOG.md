@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## v0.6.28
 
 - Score distribution default is now 40/40/20 (Technical/Choreo/Landing).
   The reset link next to the Score distribution and Quality correction
