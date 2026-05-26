@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Trick cards can now override a trick type's technical mark, saved with the program.
+
 ## v0.8.13
 
 - Made the GitHub Pages release workflow avoid the optional
