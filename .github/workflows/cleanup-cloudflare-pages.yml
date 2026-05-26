@@ -2,9 +2,6 @@ name: Cleanup Cloudflare Pages previews
 
 on:
   delete:
-  push:
-    branches:
-      - codex/cloudflare-pages-dev-deploy
   pull_request:
     types: [closed]
     branches: [main]
@@ -23,7 +20,6 @@ jobs:
     runs-on: ubuntu-latest
     if: >
       github.event_name == 'workflow_dispatch' ||
-      github.event_name == 'push' ||
       (github.event_name == 'delete' && github.event.ref_type == 'branch') ||
       (
         github.event_name == 'pull_request' &&
@@ -36,7 +32,6 @@ jobs:
       PREVIEW_BRANCH: >-
         ${{
           github.event_name == 'workflow_dispatch' && inputs.branch ||
-          github.event_name == 'push' && github.ref_name ||
           github.event_name == 'delete' && github.event.ref ||
           github.event.pull_request.head.ref
         }}
@@ -48,6 +43,7 @@ jobs:
           api_base="https://api.cloudflare.com/client/v4/accounts/${CF_ACCOUNT_ID}/pages/projects/${CF_PAGES_PROJECT}"
           page=1
           deleted=0
+          failed=0
 
           while :; do
             response="$(curl -fsS \
@@ -68,7 +64,7 @@ jobs:
               fi
 
               echo "Deleting Cloudflare Pages preview deployment ${deployment_id} for ${PREVIEW_BRANCH}"
-              delete_response="$(curl -fsS -X DELETE \
+              delete_response="$(curl -sS -X DELETE \
                 -H "Authorization: Bearer ${CF_API_TOKEN}" \
                 -H "Content-Type: application/json" \
                 "${api_base}/deployments/${deployment_id}?force=true")"
@@ -76,6 +72,7 @@ jobs:
               if jq -e '.success == true' <<<"${delete_response}" > /dev/null; then
                 deleted=$((deleted + 1))
               else
+                failed=$((failed + 1))
                 echo "${delete_response}" | jq -r '.errors[]?.message'
               fi
             done <<<"${ids}"
@@ -88,3 +85,7 @@ jobs:
           done
 
           echo "Deleted ${deleted} preview deployment(s) for ${PREVIEW_BRANCH}"
+          if (( failed > 0 )); then
+            echo "Failed to delete ${failed} preview deployment(s) for ${PREVIEW_BRANCH}"
+            exit 1
+          fi
