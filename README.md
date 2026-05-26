@@ -81,6 +81,26 @@ production builds; BrowserRouter handles client-side routing, and a
 `404.html` (a build-time copy of `index.html`) lets Pages resolve
 deep-link refreshes back into the SPA.
 
+Dev previews can be published through Cloudflare Pages without changing the
+GitHub Pages release flow. Connect the repository in Cloudflare Pages and use:
+
+- Install command: `npm ci`
+- Build command: `npm run build:cloudflare`
+- Build output directory: `dist`
+- Production branch: `main`
+- Preview deployments: enabled for pull requests
+
+`npm run build:cloudflare` sets `VITE_BASE_PATH=/` so the same Vite app works
+from a Cloudflare Pages root URL. GitHub Pages builds keep the default
+`/acro-routine-builder/` base path. `public/_redirects` routes direct deep-link
+requests back to `index.html` for the SPA on Cloudflare Pages.
+Preview deployment cleanup runs from
+[.github/workflows/cleanup-cloudflare-pages.yml](.github/workflows/cleanup-cloudflare-pages.yml)
+when a branch is deleted or a pull request is closed, deleting matching preview
+deployments from the `acro-routine-builder-dev` project. It can also be run
+manually with a branch name. Cleanup uses Cloudflare's Pages deployment delete
+API with forced deletion enabled for aliased preview deployments.
+
 ## Privacy
 
 The deployed site uses [Cloudflare Web Analytics](https://www.cloudflare.com/web-analytics/):
