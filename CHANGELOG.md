@@ -1,5 +1,10 @@
 # Changelog
 
+## Unreleased
+
+- Added a Cloudflare Pages dev-preview build path with SPA deep-link fallback
+  while keeping GitHub Pages releases tag-driven.
+
 ## v0.8.11
 
 - Runs can now be duplicated into another run through a full-run insert

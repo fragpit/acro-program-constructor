@@ -8,6 +8,13 @@ import { resolve } from 'node:path';
 
 const PROD_BASE = '/acro-routine-builder/';
 
+function resolveBase(command: string): string {
+  if (command !== 'build') {
+    return '/';
+  }
+  return process.env.VITE_BASE_PATH ?? PROD_BASE;
+}
+
 function resolveAppVersion(): string {
   const ref = process.env.GITHUB_REF_NAME;
   if (ref && /^v\d+\.\d+\.\d+/.test(ref)) {
@@ -60,7 +67,7 @@ export default defineConfig(({ command }) => ({
     }),
     copyIndexAsFallback(),
   ],
-  base: command === 'build' ? PROD_BASE : '/',
+  base: resolveBase(command),
   define: {
     __APP_VERSION__: JSON.stringify(resolveAppVersion()),
     __CF_ANALYTICS_TOKEN__: JSON.stringify(
