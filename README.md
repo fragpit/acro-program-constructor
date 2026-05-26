@@ -98,7 +98,8 @@ Preview deployment cleanup runs from
 [.github/workflows/cleanup-cloudflare-pages.yml](.github/workflows/cleanup-cloudflare-pages.yml)
 when a branch is deleted or a pull request is closed, deleting matching preview
 deployments from the `acro-routine-builder-dev` project. It can also be run
-manually with a branch name.
+manually with a branch name. Cleanup uses Cloudflare's Pages deployment delete
+API with forced deletion enabled for aliased preview deployments.
 
 ## Privacy
 
